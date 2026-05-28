@@ -1,0 +1,101 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap");
+@import "tailwindcss";
+
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-border);
+    font-family: "Manrope", sans-serif;
+  }
+
+  button {
+    @apply cursor-pointer;
+  }
+}
+
+@theme {
+  /* COLORS LIGTH */
+  --color-neutral-900: rgb(5, 21, 19);
+  --color-neutral-800: rgb(76, 92, 89);
+  --color-neutral-500: rgb(137, 148, 146);
+  --color-neutral-400: rgb(192, 207, 204);
+  --color-neutral-300: rgb(221, 233, 231);
+  --color-neutral-100: rgb(232, 240, 239);
+  --color-neutral-0: rgb(255, 255, 255);
+
+  /* COLORS DARK */
+  --color-neutral-dark-900: rgb(0, 20, 20);
+  --color-neutral-dark-800: rgb(0, 31, 31);
+  --color-neutral-dark-600: rgb(0, 46, 45);
+  --color-neutral-dark-500: rgb(0, 66, 65);
+  --color-neutral-dark-400: rgb(0, 71, 70);
+  --color-neutral-dark-300: rgb(0, 112, 110);
+  --color-neutral-dark-100: rgb(177, 185, 185);
+  --color-neutral-dark-0: rgb(255, 255, 255);
+
+  /* COLORS TEAL */
+  --color-teal-700: rgb(1, 71, 69);
+  --color-teal-800: rgb(1, 60, 59);
+
+  /* COLORS RED */
+  --color-red-600: rgb(253, 71, 64);
+  --color-red-800: rgb(203, 10, 4);
+
+  /* TEXT */
+  --text-preset-1: 1.5rem;
+  --text-preset-2: 1.25rem;
+  --text-preset-3: 1rem;
+  --text-preset-4: 0.875rem;
+  --text-preset-5: 0.75rem;
+
+  /* LINE HEIGHTS */
+  --leading-line-1: 1.4;
+  --leading-line-2: 1.2;
+  --leading-line-3: 1.5;
+  --leading-line-4: 1.5;
+  --leading-line-semibold: 1.4;
+  --leading-line-5: 1.4;
+
+  /* SPACING */
+  --spacing-0: px;
+  --spacing-025: 2px;
+  --spacing-050: 4px;
+  --spacing-075: 6px;
+  --spacing-100: 8px;
+  --spacing-125: 10px;
+  --spacing-150: 12px;
+  --spacing-200: 16px;
+  --spacing-250: 20px;
+  --spacing-300: 24px;
+  --spacing-400: 32px;
+  --spacing-500: 40px;
+  --spacing-600: 48px;
+  --spacing-800: 64px;
+  --spacing-1000: 80px;
+  --spacing-1200: 96px;
+  --spacing-1400: 112px;
+  --spacing-1600: 128px;
+  --spacing-1800: 140px;
+
+  /* RADIUS */
+  --radius-0: 0px;
+  --radius-4: 4px;
+  --radius-6: 6px;
+  --radius-8: 8px;
+  --radius-10: 10px;
+  --radius-12: 12px;
+  --radius-16: 16px;
+  --radius-20: 20px;
+  --radius-24: 24px;
+  --radius-full: 999px;
+  --radius-400: 32px;
+  --radius-500: 40px;
+}
+
+body {
+  background-color: #f7f9fa;
+  color: var(--color-dark-gray);
+}
