@@ -1,5 +1,7 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import MainLayout from "./layouts/MainLayout.vue";
+</script>
 
 <template>
-  <h1>Hello Bookmark Manager</h1>
+  <main-layout />
 </template>
