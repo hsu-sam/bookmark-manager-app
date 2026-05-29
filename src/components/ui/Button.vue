@@ -3,7 +3,7 @@ import { Icon } from "@iconify/vue";
 
 type ButtonVariant = "default" | "secondary" | "danger";
 
-type ButtonSize = "sm" | "md";
+type ButtonSize = "none" | "sm" | "md";
 
 interface ButtonProps {
   variant?: ButtonVariant;
@@ -32,6 +32,7 @@ const variants: Record<ButtonVariant, string> = {
 };
 
 const sizes: Record<ButtonSize, string> = {
+  none: "p-0",
   sm: "px-150 py-125",
   md: "px-200 py-150",
 };
@@ -46,8 +47,7 @@ const sizes: Record<ButtonSize, string> = {
   >
     <Icon icon="mdi-light:loading" class="animate-spin" v-if="loading" />
     <Icon v-else-if="icon" :icon />
-    <span class="text-center flex-1">
-      <slot />
-    </span>
+
+    <slot />
   </button>
 </template>

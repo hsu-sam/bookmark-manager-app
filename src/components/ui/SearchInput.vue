@@ -12,7 +12,7 @@ const model = defineModel();
 <template>
   <label
     :class="[
-      'flex gap-4 rounded-lg has-disabled:opacity-40 text-small py-150 px-150 bg-neutral-0 border border-neutral-400 focus-visible:border-teal-700 items-center',
+      'flex gap-4 rounded-lg has-disabled:opacity-40 text-preset-4 py-100 px-125 md:py-150 md:px-150 bg-neutral-0 border border-neutral-400 focus-visible:border-teal-700 items-center',
       $attrs.class,
     ]"
   >
