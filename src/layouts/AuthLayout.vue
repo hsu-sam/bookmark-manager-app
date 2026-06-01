@@ -1,3 +1,7 @@
 <script setup></script>
 
-<template><h1>Auth Layout</h1></template>
+<template>
+  <div class="flex items-center justify-center h-screen px-200">
+    <RouterView />
+  </div>
+</template>

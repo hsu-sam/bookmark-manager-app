@@ -1,10 +1,17 @@
 @import "./base.css";
 
 h1 {
+  @apply text-preset-1 font-bold;
 }
 
 h2 {
+  @apply text-preset-2 font-bold;
 }
 
 h3 {
+  @apply text-preset-3 font-bold;
+}
+
+p {
+  @apply text-preset-4 font-normal;
 }

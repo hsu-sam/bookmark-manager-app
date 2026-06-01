@@ -28,7 +28,7 @@ const emit = defineEmits<{
     <div
       :class="[
         'fixed lg:static top-0 left-0 z-30',
-        'flex flex-col gap-200 bg-neutral-0 w-[296px] h-screen border-r border-neutral-400',
+        'flex flex-col gap-200 bg-neutral-0 w-74 h-screen border-r border-neutral-400',
         'transition-transform duration-300',
         // On mobile/tablet: slide in/out. On lg: always visible
         'lg:translate-x-0',
