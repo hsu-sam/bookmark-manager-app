@@ -30,12 +30,13 @@ const reactiveType = ref(props.type);
   >
     <label
       :class="[
-        'flex flex-col gap-1.5 has-disabled:opacity-40 text-small',
+        'flex flex-col gap-1.5 has-disabled:opacity-40 text-small text-neutral-900',
         $attrs.class,
       ]"
     >
       <span class="font-semibold">
-        {{ label }} <em class="text-red-500 not-italic" v-if="required">*</em>
+        {{ label }}
+        <em class="text-teal-700 not-italic" v-if="required">*</em>
       </span>
 
       <div
@@ -55,7 +56,7 @@ const reactiveType = ref(props.type);
             'bg-green-600': isValid,
             'border-error': meta.touched && !meta.valid,
           }"
-          class="flex-1 focus-visible:outline-none"
+          class="flex-1 outline-none focus:outline focus:outline-offset-1 focus:outline-teal-800"
         />
         <div
           :class="{

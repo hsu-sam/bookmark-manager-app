@@ -13,12 +13,18 @@ const routes: RouteRecordRaw[] = [
     name: "auth.logout",
     component: () => import("../views/auth/Logout.vue"),
   },
-
   {
-    path: "/u",
-    alias: "/users",
-    children: [...userRoutes],
-    meta: { layout: "user" },
+    path: "/",
+    name: "",
+    component: () => import("../layouts/MainLayout.vue"),
+    children: [
+      {
+        path: "/u",
+        alias: "/users",
+        children: [...userRoutes],
+        meta: { layout: "user" },
+      },
+    ],
   },
 ];
 

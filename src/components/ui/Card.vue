@@ -1,5 +1,4 @@
 <script setup lang="ts"></script>
-
 <template>
-  <router-view />
+  <div class="bg-white rounded-lg shadow-md p-6"></div>
 </template>
