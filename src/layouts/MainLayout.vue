@@ -2,12 +2,13 @@
 import { ref } from "vue";
 import Header from "@/components/Header.vue";
 import SideBar from "@/components/SideBar.vue";
+import BookmarkHeader from "@/components/BookmarkHeader.vue";
 
 const sidebarOpen = ref(false);
 </script>
 
 <template>
-  <div class="flex h-screen bg-gray-100">
+  <div class="flex h-screen">
     <!-- Sidebar -->
     <SideBar :is-open="sidebarOpen" @close="sidebarOpen = false" />
 
@@ -17,7 +18,8 @@ const sidebarOpen = ref(false);
       <Header @open-sidebar="sidebarOpen = true" />
 
       <!-- Main Content -->
-      <main class="flex-1 overflow-y-auto p-6">
+      <main class="flex-1 flex flex-col gap-250 p-6">
+        <BookmarkHeader />
         <router-view />
       </main>
     </div>

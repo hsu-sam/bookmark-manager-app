@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Icon } from "@iconify/vue";
 
-type ButtonVariant = "default" | "secondary" | "danger";
+type ButtonVariant = "default" | "secondary" | "danger" | "outline";
 
 type ButtonSize = "none" | "sm" | "md";
 
@@ -29,6 +29,9 @@ const variants: Record<ButtonVariant, string> = {
 
   danger:
     "flex items-center gap-050 text-p4 leading-p4 font-medium text-neutral-0 bg-red-500 hover:bg-red-800 focus:outline-2 focus:outline-offset-2 focus:outline-red-800 rounded-8 inset-shadow-sm inset-shadow-red--800 cursor-pointer",
+
+  outline:
+    "flex items-center gap-050 text-p4 leading-p4 font-medium text-teal-700 bg-transparent hover:bg-teal-100 focus:outline-2 focus:outline-offset-2 focus:outline-teal-800 rounded-8 cursor-pointer",
 };
 
 const sizes: Record<ButtonSize, string> = {

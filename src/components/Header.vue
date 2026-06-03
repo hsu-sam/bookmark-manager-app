@@ -8,13 +8,13 @@ const emit = defineEmits<{ openSidebar: [] }>();
 
 <template>
   <div
-    class="flex items-center px-200 py-150 md:px-400 md:py-200 gap-125 justify-between bg-neutral-0 w-full h-[78px] border-b border-b-neutral-400"
+    class="flex items-center px-200 py-150 md:px-400 md:py-200 gap-125 justify-between bg-neutral-0 w-full h-19.5 border-b border-b-neutral-400"
   >
     <div class="flex items-center gap-125 lg:gap-200">
       <Button @click="emit('openSidebar')" class="lg:hidden"
         ><Icon icon="local:icon-menu-hamburger"
       /></Button>
-      <SearchInput class="min-w-[320px]" placeholder="Search by title..." />
+      <SearchInput class="md:min-w-[320px]" placeholder="Search by title..." />
     </div>
 
     <div class="flex items-center gap-125 md:gap-200">

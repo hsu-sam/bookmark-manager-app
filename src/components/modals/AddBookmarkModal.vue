@@ -1,1 +1,3 @@
-<template><h1>Add Bookmark</h1></template>
+<script setup lang="ts"></script>
+
+<template></template>

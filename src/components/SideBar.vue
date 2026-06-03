@@ -3,6 +3,14 @@
 import Tags from "./ui/Tags.vue";
 import { Icon } from "@iconify/vue";
 import Button from "./ui/Button.vue";
+import { useRoute } from "vue-router";
+
+interface Section {
+  label: string;
+  name: string;
+  path: string;
+  icon: string;
+}
 
 defineProps<{
   isOpen?: boolean; // only used on tablet/mobile
@@ -11,6 +19,25 @@ defineProps<{
 const emit = defineEmits<{
   close: [];
 }>();
+
+const sections: Section[] = [
+  {
+    label: "Home",
+    name: "user.index",
+    path: "/home",
+    icon: "local:icon-home",
+  },
+  {
+    label: "Archived",
+    name: "user.archived",
+    path: "/archived",
+    icon: "local:icon-archive",
+  },
+];
+
+const isRouteActive = (routeName: string) => {
+  return routeName === useRoute().name;
+};
 </script>
 
 <template>
@@ -51,8 +78,23 @@ const emit = defineEmits<{
 
       <div class="flex flex-col gap-200 pt-0 pb-250 px-200">
         <div>
-          <h1>Home</h1>
-          <h1>Archived</h1>
+          <router-link
+            v-for="section in sections"
+            :key="section.name"
+            :to="{ name: section.name.toLowerCase() }"
+            :class="{
+              'active group': isRouteActive(section.name),
+            }"
+          >
+            <div
+              class="flex items-center gap-100 py-100 px-150 rounded-8 mb-0.5 hover:bg-neutral-100 transition-colors group-[.active]:bg-neutral-100 group-[.active]:text-neutral-900"
+            >
+              <Icon :icon="section.icon" class="w-5 h-5" />
+              <span class="text-preset-3 font-semibold">
+                {{ section.label }}
+              </span>
+            </div>
+          </router-link>
         </div>
         <Tags />
       </div>
