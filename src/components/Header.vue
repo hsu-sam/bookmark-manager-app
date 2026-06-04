@@ -2,8 +2,15 @@
 import { Icon } from "@iconify/vue";
 import Button from "./ui/Button.vue";
 import SearchInput from "./ui/SearchInput.vue";
+import AddBookmarkModal from "./modals/AddBookmarkModal.vue";
+import { ref } from "vue";
 
 const emit = defineEmits<{ openSidebar: [] }>();
+const isAddBookmarkModal = ref(false);
+
+function openAddBookmarkModal() {
+  isAddBookmarkModal.value = true;
+}
 </script>
 
 <template>
@@ -18,7 +25,10 @@ const emit = defineEmits<{ openSidebar: [] }>();
     </div>
 
     <div class="flex items-center gap-125 md:gap-200">
-      <Button class="flex flex-row items-center gap-100">
+      <Button
+        class="flex flex-row items-center gap-100"
+        @click="openAddBookmarkModal"
+      >
         <Icon icon="local:icon-add" class="w-5 h-5" />
         <span class="hidden md:block">Add Bookmark</span>
       </Button>
@@ -41,4 +51,6 @@ const emit = defineEmits<{ openSidebar: [] }>();
       </div>
     </div>
   </div>
+
+  <AddBookmarkModal v-model="isAddBookmarkModal" />
 </template>

@@ -1,76 +1,84 @@
 <script setup lang="ts">
 import {
-  Dialog,
-  DialogPanel,
-  DialogTitle,
+  DialogClose,
+  DialogContent,
   DialogDescription,
-} from "@headlessui/vue";
+  DialogOverlay,
+  DialogPortal,
+  DialogRoot,
+  DialogTitle,
+  DialogTrigger,
+} from "radix-vue";
 import { Icon } from "@iconify/vue";
+import Button from "./Button.vue";
 
 interface ModalProps {
   title?: string;
   description?: string;
-  dialogClass?: string;
   hideDefaultClose?: boolean;
+  contentClass?: string;
   width?: string;
 }
 
 defineProps<ModalProps>();
-const emit = defineEmits(["close"]);
 
 const isOpen = defineModel<boolean>();
-
-function close() {
-  isOpen.value = false;
-  emit("close");
-}
 </script>
 
 <template>
-  <Dialog :open="isOpen" v-if="isOpen" @close="close" class="relative z-50">
-    <div class="fixed inset-0 bg-black/60" aria-hidden="true" />
+  <DialogRoot v-model:open="isOpen">
+    <DialogTrigger v-if="$slots.trigger" as-child>
+      <slot name="trigger" />
+    </DialogTrigger>
 
-    <div class="fixed inset-0 flex items-center justify-center p-4 mx-auto">
-      <DialogPanel
-        class="flex flex-col gap-4 rounded-4xl border"
-        :class="[
-          dialogClass || 'bg-white p-8 border-border',
-          width ? `w-${width}` : 'w-125',
-        ]"
+    <DialogPortal>
+      <DialogOverlay
+        style="
+          position: fixed;
+          inset: 0;
+          z-index: 50;
+          background-color: rgb(10 10 10 / 0.6);
+        "
+      />
+
+      <DialogContent
+        class="flex flex-col gap-400 fixed left-1/2 top-1/2 z-100 -translate-x-1/2 -translate-y-1/2 rounded-16 p-400 bg-neutral-0 data-[state=open]:animate-contentShow"
+        :class="[contentClass, width || 'w-[90vw] max-w-[500px]']"
       >
-        <Icon
+        <!-- Close button -->
+        <DialogClose
           v-if="!hideDefaultClose"
-          icon="local:icon-close"
-          :width="32"
-          :height="32"
-          @click="close"
-          class="self-end cursor-pointer"
-        />
+          class="absolute right-4 top-4"
+          aria-label="Close"
+        >
+          <Button variant="secondary">
+            <Icon icon="local:icon-close" class="h-5 w-5"
+          /></Button>
+        </DialogClose>
 
+        <!-- Header -->
         <div
           v-if="$slots.title || $slots.description"
-          class="flex flex-col gap-1.5"
+          class="flex flex-col gap-100"
         >
-          <DialogTitle class="text-h2 leading-h2 text-dark-gray font-bold">
+          <DialogTitle as-child>
             <slot name="title" />
           </DialogTitle>
-
-          <DialogDescription
-            class="text-p2 leading-p2 text-secondary-gray font-medium"
-          >
+          <DialogDescription as-child>
             <slot name="description" />
           </DialogDescription>
         </div>
 
-        <slot name="main" :close />
+        <!-- Main content -->
+        <div class="flex flex-col gap-250">
+          <slot name="main" />
+        </div>
 
-        <div
-          v-if="$slots.footer"
-          class="flex justify-center items-center gap-3 text-small w-full mt-2"
-        >
+        <!-- Footer -->
+        <div v-if="$slots.footer" class="flex items-center justify-end gap-200">
           <slot name="footer" />
         </div>
-      </DialogPanel>
-    </div>
-  </Dialog>
+      </DialogContent>
+    </DialogPortal>
+  </DialogRoot>
 </template>
