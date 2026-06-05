@@ -15,7 +15,7 @@ export interface TextAreaProps {
 const props = withDefaults(defineProps<TextAreaProps>(), {
   required: true,
   maxLength: 280,
-  rows: 4,
+  rows: 3,
 });
 
 const model = defineModel<string>();

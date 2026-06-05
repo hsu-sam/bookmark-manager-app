@@ -11,4 +11,9 @@ export const userRoutes: RouteRecordRaw[] = [
     component: () => import("@/views/private/ArchivedIndex.vue"),
     name: "user.archived",
   },
+  {
+    path: "/:pathMatch(.*)*",
+    component: () => import("@/views/private/PageNotFound.vue"),
+    name: "NotFound",
+  },
 ];

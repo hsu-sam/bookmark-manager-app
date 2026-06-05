@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Icon } from "@iconify/vue";
 import Button from "./ui/Button.vue";
+import ActionsDropdown from "./Dropdowns/ActionsDropdown.vue";
 </script>
 
 <template>
@@ -21,9 +22,7 @@ import Button from "./ui/Button.vue";
           </div>
         </div>
 
-        <Button variant="secondary"
-          ><Icon icon="local:icon-menu-bookmark"
-        /></Button>
+        <ActionsDropdown />
       </div>
 
       <div class="w-full border-b border-neutral-300"></div>
