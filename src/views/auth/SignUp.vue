@@ -6,7 +6,11 @@ import Input from "@/components/ui/Input.vue";
 import Button from "@/components/ui/Button.vue";
 import { useAuth } from "@/composables/useAuth";
 import { useToast } from "@/composables/useToast";
-import { emailRule, passwordRule, requiredRule } from "@/schemas/password.schemas";
+import {
+  emailRule,
+  passwordRule,
+  requiredRule,
+} from "@/schemas/password.schemas";
 
 const router = useRouter();
 const { signUp } = useAuth();
@@ -37,7 +41,7 @@ const onSubmit = handleSubmit(async (values) => {
   }
 
   if (data.session) {
-    router.push({ name: "user.index" });
+    router.push({ name: "auth.signin" });
     return;
   }
 

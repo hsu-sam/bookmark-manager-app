@@ -34,11 +34,10 @@ const onSubmit = handleSubmit(async (values) => {
     title: values.title,
     url: values.url,
     description: values.description,
-    tags: Array.isArray(values.tags)
-      ? values.tags
-      : values.tags
-        ? [values.tags]
-        : [],
+    tags: values.tags
+      .split(",")
+      .map((tag: string) => tag.trim())
+      .filter(Boolean),
   });
   loading.value = false;
 
@@ -72,7 +71,12 @@ const onSubmit = handleSubmit(async (values) => {
           class="full"
         />
         <Input name="url" label="Website URL" type="text" class="w-full" />
-        <Input name="tags" label="Tags" type="text" class="w-full" />
+        <Input
+          name="tags"
+          label="Tags (comma separated)"
+          type="text"
+          class="w-full"
+        />
 
         <div class="flex items-center justify-end gap-200 mt-400">
           <Button variant="secondary" type="button" @click="handleCloseModal">

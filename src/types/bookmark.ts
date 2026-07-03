@@ -16,7 +16,7 @@ export type AddBookmarkPayload = {
   title: string;
   url: string;
   description?: string;
-  tags?: string[];
+  tags: string[];
 };
 
 export type UpdateBookmarkPayload = Partial<

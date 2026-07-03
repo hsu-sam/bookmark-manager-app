@@ -93,6 +93,34 @@ export function useBookmarks() {
     return updateBookmark(id, { is_archived: false });
   };
 
+  const recordVisit = async (id: string) => {
+    const bookmark = bookmarks.value.find((b) => b.id === id);
+    if (!bookmark) return null;
+
+    const { data, error: err } = await supabase
+      .from("bookmarks")
+      .update({
+        visit_count: bookmark.visit_count + 1,
+        last_visited: new Date().toISOString(),
+      })
+      .eq("id", id)
+      .select("*")
+      .single();
+
+    if (err) {
+      error.value = err.message;
+      return null;
+    }
+
+    const updatedBookmark = data as Bookmark;
+    const index = bookmarks.value.findIndex((b) => b.id === id);
+    if (index !== -1) {
+      bookmarks.value[index] = updatedBookmark;
+    }
+
+    return updatedBookmark;
+  };
+
   return {
     bookmarks,
     loading,
@@ -103,5 +131,6 @@ export function useBookmarks() {
     togglePin,
     archiveBookmark,
     unarchiveBookmark,
+    recordVisit,
   };
 }

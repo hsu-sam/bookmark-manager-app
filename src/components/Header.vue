@@ -4,10 +4,12 @@ import Button from "./ui/Button.vue";
 import SearchInput from "./ui/SearchInput.vue";
 import AddBookmarkModal from "./modals/AddBookmarkModal.vue";
 import ProfileMenu from "./Dropdowns/ProfileMenu.vue";
+import { useBookmarkSearch } from "@/composables/useBookmarkSearch";
 import { ref } from "vue";
 
 const emit = defineEmits<{ openSidebar: [] }>();
 const isAddBookmarkModal = ref(false);
+const { searchQuery } = useBookmarkSearch();
 
 function openAddBookmarkModal() {
   isAddBookmarkModal.value = true;
@@ -22,7 +24,11 @@ function openAddBookmarkModal() {
       <Button @click="emit('openSidebar')" class="lg:hidden"
         ><Icon icon="local:icon-menu-hamburger"
       /></Button>
-      <SearchInput class="md:min-w-[320px]" placeholder="Search by title..." />
+      <SearchInput
+        v-model="searchQuery"
+        class="md:min-w-[320px]"
+        placeholder="Search bookmarks..."
+      />
     </div>
 
     <div class="flex items-center gap-125 md:gap-200">
