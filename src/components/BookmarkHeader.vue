@@ -1,12 +1,21 @@
 <script setup lang="ts">
-import { Icon } from "@iconify/vue";
-import Button from "./ui/Button.vue";
+import { computed } from "vue";
+import { useRoute } from "vue-router";
+import SortDropdown from "./Dropdowns/SortDropdown.vue";
+import { useBookmarkSort } from "@/composables/useBookmarkSort";
+
+const route = useRoute();
+const { sortBy } = useBookmarkSort();
+
+const title = computed(() =>
+  route.name === "user.archived" ? "Archived Bookmarks" : "All Bookmarks",
+);
 </script>
 
 <template>
   <div class="flex items-center justify-between">
-    <h1>All Bookmarks</h1>
+    <h1>{{ title }}</h1>
 
-    <Button variant="secondary"><Icon icon="local:icon-sort" />Sort by</Button>
+    <SortDropdown v-model="sortBy" />
   </div>
 </template>

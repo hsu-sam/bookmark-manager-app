@@ -26,7 +26,7 @@ function logout() {
       <!-- Profile header -->
       <div class="min-w-62 flex items-center gap-150 py-150 px-100">
         <div
-          class="w-[40px] h-[40px] rounded-full border border-neutral-300 p-2 hover:bg-neutral-100"
+          class="w-500 h-500 rounded-full border border-neutral-300 p-2 hover:bg-neutral-100"
         >
           <Icon icon="lucide:user" class="w-5 h-5" />
         </div>

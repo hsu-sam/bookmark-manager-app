@@ -1,61 +1,166 @@
 <script setup lang="ts">
+import { ref } from "vue";
 import { Icon } from "@iconify/vue";
 import Button from "./ui/Button.vue";
 import ActionsDropdown from "./Dropdowns/ActionsDropdown.vue";
+import { useDate } from "../composables/useDate";
+import type { Bookmark } from "@/types/home";
+import EditBookmarkModal from "./modals/EditBookmarkModal.vue";
+import { useBookmarks } from "@/composables/useBookmark.ts";
+import { useToast } from "@/composables/useToast.ts";
+
+const { formatDate } = useDate();
+const toast = useToast();
+
+const props = withDefaults(
+  defineProps<{
+    bookmark: Bookmark;
+    archived?: boolean;
+  }>(),
+  {
+    archived: false,
+  },
+);
+
+const emit = defineEmits<{
+  updated: [];
+}>();
+
+const isEditModalOpen = ref(false);
+const { togglePin, archiveBookmark, unarchiveBookmark } = useBookmarks();
+
+const getFaviconUrl = (url: string) => {
+  try {
+    const domain = new URL(url.startsWith("http") ? url : `https://${url}`)
+      .hostname;
+    return `https://www.google.com/s2/favicons?sz=64&domain=${domain}`;
+  } catch (e) {
+    return "";
+  }
+};
+
+function openEditModal() {
+  isEditModalOpen.value = true;
+}
+
+async function handleTogglePin(id: string) {
+  const result = await togglePin(id, props.bookmark.is_pinned);
+
+  if (!result) {
+    toast.error("Failed to update pin status.");
+    return;
+  }
+
+  toast.success(result.is_pinned ? "Bookmark pinned." : "Bookmark unpinned.");
+}
+
+async function handleArchive(id: string) {
+  const result = await archiveBookmark(id);
+
+  if (!result) {
+    toast.error("Failed to archive bookmark.");
+    return;
+  }
+
+  toast.success("Bookmark archived.");
+}
+
+async function handleUnarchive(id: string) {
+  const result = await unarchiveBookmark(id);
+
+  if (!result) {
+    toast.error("Failed to unarchive bookmark.");
+    return;
+  }
+
+  toast.success("Bookmark restored.");
+}
 </script>
 
 <template>
   <div class="bg-neutral-0 rounded-12 max-w-84.5">
-    <div class="flex flex-col items-center gap-200 p-200">
-      <div class="flex items-center justify-between w-full">
-        <div class="flex items-center gap-150">
-          <div class="rounded-12 border border-neutral-300 bg-neutral-0">
-            <img
-              src="https://www.google.com/s2/favicons?sz=64&domain=google.com"
-              alt="Google Favicon"
-              class="w-11 h-11 rounded-8"
-            />
+    <div class="flex flex-col justify-between h-full">
+      <div class="flex flex-col items-center gap-200 p-200">
+        <div class="flex items-center justify-between w-full">
+          <div class="flex items-center gap-150">
+            <div class="rounded-12 border border-neutral-300 bg-neutral-0">
+              <img
+                :src="getFaviconUrl(bookmark.url)"
+                :alt="`${bookmark.title} Favicon`"
+                class="w-11 h-11 rounded-8"
+              />
+            </div>
+            <div class="flex flex-col items-start gap-050">
+              <h2 class="text-h3 text-neutral-900">{{ bookmark.title }}</h2>
+
+              <p class="text-preset-5 text-neutral-600">{{ bookmark.url }}</p>
+            </div>
           </div>
-          <div class="flex flex-col items-center gap-050">
-            <h2 class="text-h3 text-neutral-900">Google</h2>
-            <p class="text-preset-5 text-neutral-600">google.com</p>
-          </div>
+
+          <ActionsDropdown
+            :bookmark="bookmark"
+            :archived="archived"
+            @edit="openEditModal"
+            @toggle-pin="handleTogglePin"
+            @archive="handleArchive"
+            @unarchive="handleUnarchive"
+          />
         </div>
 
-        <ActionsDropdown />
+        <div class="w-full border-b border-neutral-300"></div>
+
+        <p class="text-p4 text-neutral-600">
+          {{ bookmark.description }}
+        </p>
+
+        <div class="flex flex-wrap items-center gap-150 w-full">
+          <p
+            v-for="(tag, index) in bookmark.tags"
+            :key="index"
+            class="px-100 py-025 bg-neutral-100 rounded-4"
+          >
+            {{ tag }}
+          </p>
+        </div>
       </div>
 
-      <div class="w-full border-b border-neutral-300"></div>
+      <div
+        class="flex items-center justify-between px-200 py-150 border-t border-neutral-300"
+      >
+        <div class="flex items-center gap-200">
+          <p class="flex items-center gap-100">
+            <Icon icon="local:icon-visit-count" />
+            <span>{{ bookmark.visit_count }}</span>
+          </p>
+          <p class="flex items-center gap-100">
+            <Icon icon="local:icon-last-visited" />
+            <span>{{
+              bookmark.last_visited
+                ? formatDate(bookmark.last_visited)
+                : "Never"
+            }}</span>
+          </p>
+          <p class="flex items-center gap-100">
+            <Icon icon="local:icon-created" />
+            <span>{{ formatDate(bookmark.created_at) }}</span>
+          </p>
+        </div>
 
-      <p class="text-p4 text-neutral-600">
-        This is a sample bookmark description. You can add more details about
-        the bookmark here.
-      </p>
+        <Icon v-if="bookmark.is_pinned" icon="local:icon-pin" />
 
-      <div class="flex flex-wrap items-center gap-150 w-full">
-        <p class="px-100 py-025 bg-neutral-100 rounded-4">Search</p>
-        <p class="px-100 py-025 bg-neutral-100 rounded-4">Google</p>
-        <p class="px-100 py-025 bg-neutral-100 rounded-4">Browse</p>
-        <p class="px-100 py-025 bg-neutral-100 rounded-4">Navigate</p>
+        <p
+          v-if="archived"
+          class="px-100 py-025 bg-neutral-100 rounded-4 text-preset-5 text-neutral-600"
+        >
+          Archived
+        </p>
       </div>
     </div>
 
-    <div
-      class="flex items-center justify-between px-200 py-150 border-t border-neutral-300"
-    >
-      <div class="flex items-center gap-200">
-        <p class="flex items-center gap-100">
-          <Icon icon="local:icon-visit-count" /> <span>47</span>
-        </p>
-        <p class="flex items-center gap-100">
-          <Icon icon="local:icon-last-visited" /> <span>23 Sep</span>
-        </p>
-        <p class="flex items-center gap-100">
-          <Icon icon="local:icon-created" /> <span>10 Jan </span>
-        </p>
-      </div>
-
-      <Button variant="outline"><Icon icon="local:icon-pin" /></Button>
-    </div>
+    <EditBookmarkModal
+      v-model="isEditModalOpen"
+      :bookmark="bookmark"
+      @updated="emit('updated')"
+    />
   </div>
 </template>
