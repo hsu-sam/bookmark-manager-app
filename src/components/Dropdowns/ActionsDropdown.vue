@@ -3,7 +3,7 @@ import { computed } from "vue";
 import Button from "../ui/Button.vue";
 import { Icon } from "@iconify/vue";
 import Dropdown from "../ui/Dropdown.vue";
-import type { Bookmark } from "@/types/home";
+import type { Bookmark } from "@/types/bookmark.ts";
 import { useToast } from "@/composables/useToast.ts";
 
 const toast = useToast();

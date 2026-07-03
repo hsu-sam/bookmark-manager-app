@@ -4,7 +4,7 @@ import { Icon } from "@iconify/vue";
 import Button from "./ui/Button.vue";
 import ActionsDropdown from "./Dropdowns/ActionsDropdown.vue";
 import { useDate } from "../composables/useDate";
-import type { Bookmark } from "@/types/home";
+import type { Bookmark } from "@/types/bookmark.ts";
 import EditBookmarkModal from "./modals/EditBookmarkModal.vue";
 import { useBookmarks } from "@/composables/useBookmark.ts";
 import { useToast } from "@/composables/useToast.ts";

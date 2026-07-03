@@ -5,7 +5,7 @@ import Modal from "../ui/Modal.vue";
 import Textarea from "@/components/ui/Textarea.vue";
 import Button from "../ui/Button.vue";
 import { useBookmarks } from "@/composables/useBookmark.ts";
-import type { Bookmark } from "@/types/home";
+import type { Bookmark } from "@/types/bookmark.ts";
 import { useToast } from "@/composables/useToast";
 
 const isOpen = defineModel<boolean>();

@@ -4,7 +4,7 @@ import type {
   Bookmark,
   AddBookmarkPayload,
   UpdateBookmarkPayload,
-} from "@/types/home";
+} from "@/types/bookmark";
 
 const bookmarks = ref<Bookmark[]>([]);
 const loading = ref(false);
@@ -53,10 +53,7 @@ export function useBookmarks() {
     return newBookmark;
   };
 
-  const updateBookmark = async (
-    id: string,
-    payload: UpdateBookmarkPayload,
-  ) => {
+  const updateBookmark = async (id: string, payload: UpdateBookmarkPayload) => {
     loading.value = true;
     error.value = null;
 

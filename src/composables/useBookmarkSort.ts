@@ -1,5 +1,5 @@
 import { ref } from "vue";
-import type { Bookmark } from "@/types/home";
+import type { Bookmark } from "@/types/bookmark";
 
 export type BookmarkSortOption =
   | "recently-added"
