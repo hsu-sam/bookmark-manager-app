@@ -1,6 +1,33 @@
-<script setup>
+<script setup lang="ts">
+import { ref } from "vue";
+import { useForm } from "vee-validate";
 import Input from "@/components/ui/Input.vue";
 import Button from "@/components/ui/Button.vue";
+import { useAuth } from "@/composables/useAuth";
+import { useToast } from "@/composables/useToast";
+import { emailRule } from "@/schemas/password.schemas";
+
+const { sendPasswordReset } = useAuth();
+const toast = useToast();
+
+const loading = ref(false);
+
+const { handleSubmit } = useForm({
+  validationSchema: {
+    email: emailRule,
+  },
+});
+
+const onSubmit = handleSubmit(async (values) => {
+  loading.value = true;
+  await sendPasswordReset(values.email as string);
+  loading.value = false;
+  // Always show the same message, whether or not the account exists,
+  // to avoid leaking which emails are registered.
+  toast.success(
+    "If an account exists for that email, you'll receive a reset link shortly.",
+  );
+});
 </script>
 
 <template>
@@ -16,10 +43,15 @@ import Button from "@/components/ui/Button.vue";
       </p>
     </div>
 
-    <form action="" class="flex flex-col gap-200">
-      <Input label="Email" type="email" class="w-full" />
+    <form class="flex flex-col gap-200" @submit="onSubmit">
+      <Input name="email" label="Email" type="email" class="w-full" />
 
-      <Button type="submit" class="w-full justify-center">
+      <Button
+        type="submit"
+        class="w-full justify-center"
+        :loading="loading"
+        :disabled="loading"
+      >
         Send reset link
       </Button>
     </form>

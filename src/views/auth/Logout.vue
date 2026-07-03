@@ -1,3 +1,15 @@
-<script setup></script>
+<script setup lang="ts">
+import { onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { useAuth } from "@/composables/useAuth";
 
-<template>Logout</template>
+const router = useRouter();
+const { signOut } = useAuth();
+
+onMounted(async () => {
+  await signOut();
+  router.replace({ name: "auth.signin" });
+});
+</script>
+
+<template></template>

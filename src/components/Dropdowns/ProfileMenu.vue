@@ -1,6 +1,14 @@
 <script setup lang="ts">
+import { useRouter } from "vue-router";
+
 import { Icon } from "@iconify/vue";
 import Dropdown from "../ui/Dropdown.vue";
+
+const router = useRouter();
+
+function logout() {
+  router.push({ name: "auth.logout" });
+}
 </script>
 
 <template>
@@ -16,7 +24,7 @@ import Dropdown from "../ui/Dropdown.vue";
 
     <template #content>
       <!-- Profile header -->
-      <div class="min-w-62 flex items-center gap-150 py-150 px-200">
+      <div class="min-w-62 flex items-center gap-150 py-150 px-100">
         <div
           class="w-[40px] h-[40px] rounded-full border border-neutral-300 p-2 hover:bg-neutral-100"
         >
@@ -56,6 +64,7 @@ import Dropdown from "../ui/Dropdown.vue";
 
       <!-- Logout -->
       <button
+        @click="logout"
         type="button"
         class="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-neutral-800 cursor-pointer outline-none text-left hover:bg-neutral-100"
       >

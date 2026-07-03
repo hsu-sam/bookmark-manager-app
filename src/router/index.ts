@@ -5,6 +5,14 @@ import {
 } from "vue-router";
 import { userRoutes } from "./private.ts";
 import { publicRoutes } from "./public.ts";
+import { useAuth } from "@/composables/useAuth";
+
+declare module "vue-router" {
+  interface RouteMeta {
+    authless?: boolean;
+    layout?: string;
+  }
+}
 
 const routes: RouteRecordRaw[] = [
   ...publicRoutes,
@@ -12,6 +20,12 @@ const routes: RouteRecordRaw[] = [
     path: "/logout",
     name: "auth.logout",
     component: () => import("../views/auth/Logout.vue"),
+    meta: { authless: true },
+  },
+  {
+    path: "/:pathMatch(.*)*",
+    component: () => import("@/views/private/PageNotFound.vue"),
+    name: "NotFound",
   },
   {
     path: "/",
@@ -35,26 +49,20 @@ export const router = createRouter({
 
 // / Middlewares
 
-// router.beforeResolve((to, _from, next) => {
-//   If this isn't an initial page load.
-//   if (to.name) {
-//     // Start the route progress bar.
-//     NProgress.start()
-//   }
-//   next()
-// })
-// router.afterEach(() => {
-//   Complete the animation of the route progress bar.
-//   NProgress.done()
-// })
+router.beforeEach(async (to) => {
+  const { isReady, isAuthenticated, initAuth } = useAuth();
 
-// router.beforeEach(to => {
-//    refreshNavigationController()
+  if (!isReady.value) {
+    await initAuth();
+  }
 
-//   const authStore = useAuthStore()
-//   if (to.meta.authless) {
-//     return true
-//   } else if (!authStore.isAuthenticated) {
-//     return { name: 'auth.login' }
-//   }
-// })
+  if (to.meta.authless) {
+    return true;
+  }
+
+  if (!isAuthenticated.value) {
+    return { name: "auth.signin" };
+  }
+
+  return true;
+});

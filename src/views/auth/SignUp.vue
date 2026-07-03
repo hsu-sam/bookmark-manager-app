@@ -1,6 +1,48 @@
-<script setup>
+<script setup lang="ts">
+import { ref } from "vue";
+import { useForm } from "vee-validate";
+import { useRouter } from "vue-router";
 import Input from "@/components/ui/Input.vue";
 import Button from "@/components/ui/Button.vue";
+import { useAuth } from "@/composables/useAuth";
+import { useToast } from "@/composables/useToast";
+import { emailRule, passwordRule, requiredRule } from "@/schemas/password.schemas";
+
+const router = useRouter();
+const { signUp } = useAuth();
+const toast = useToast();
+
+const loading = ref(false);
+
+const { handleSubmit } = useForm({
+  validationSchema: {
+    fullName: requiredRule("Full name"),
+    email: emailRule,
+    password: passwordRule,
+  },
+});
+
+const onSubmit = handleSubmit(async (values) => {
+  loading.value = true;
+  const { data, error } = await signUp(
+    values.email as string,
+    values.password as string,
+    values.fullName as string,
+  );
+  loading.value = false;
+
+  if (error) {
+    toast.error(error.message);
+    return;
+  }
+
+  if (data.session) {
+    router.push({ name: "user.index" });
+    return;
+  }
+
+  toast.success("Check your email to confirm your account.");
+});
 </script>
 
 <template>
@@ -16,11 +58,15 @@ import Button from "@/components/ui/Button.vue";
       </p>
     </div>
 
-    <form action="" class="flex flex-col gap-200">
-      <Input label="Full Name" type="text" class="w-full" />
-      <Input label="Email" type="email" class="w-full" />
-      <Input label="Password" type="password" class="w-full" />
-      <Button type="submit" class="w-full justify-center"
+    <form class="flex flex-col gap-200" @submit="onSubmit">
+      <Input name="fullName" label="Full Name" type="text" class="w-full" />
+      <Input name="email" label="Email" type="email" class="w-full" />
+      <Input name="password" label="Password" type="password" class="w-full" />
+      <Button
+        type="submit"
+        class="w-full justify-center"
+        :loading="loading"
+        :disabled="loading"
         >Create account
       </Button>
     </form>

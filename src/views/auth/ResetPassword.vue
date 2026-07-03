@@ -1,6 +1,38 @@
-<script setup>
+<script setup lang="ts">
+import { ref } from "vue";
+import { useForm } from "vee-validate";
+import { useRouter } from "vue-router";
 import Input from "@/components/ui/Input.vue";
 import Button from "@/components/ui/Button.vue";
+import { useAuth } from "@/composables/useAuth";
+import { useToast } from "@/composables/useToast";
+import { confirmPasswordRule, passwordRule } from "@/schemas/password.schemas";
+
+const router = useRouter();
+const { updatePassword } = useAuth();
+const toast = useToast();
+
+const loading = ref(false);
+
+const { handleSubmit } = useForm({
+  validationSchema: {
+    newPassword: passwordRule,
+    confirmPassword: confirmPasswordRule,
+  },
+});
+
+const onSubmit = handleSubmit(async (values) => {
+  loading.value = true;
+  const { error } = await updatePassword(values.newPassword as string);
+  loading.value = false;
+
+  if (error) {
+    toast.error(error.message);
+    return;
+  }
+
+  router.push({ name: "auth.signin" });
+});
 </script>
 
 <template>
@@ -15,11 +47,26 @@ import Button from "@/components/ui/Button.vue";
       </p>
     </div>
 
-    <form action="" class="flex flex-col gap-200">
-      <Input label="New Password" type="password" class="w-full" />
-      <Input label="Confirm Password" type="password" class="w-full" />
+    <form class="flex flex-col gap-200" @submit="onSubmit">
+      <Input
+        name="newPassword"
+        label="New Password"
+        type="password"
+        class="w-full"
+      />
+      <Input
+        name="confirmPassword"
+        label="Confirm Password"
+        type="password"
+        class="w-full"
+      />
 
-      <Button type="submit" class="w-full justify-center">
+      <Button
+        type="submit"
+        class="w-full justify-center"
+        :loading="loading"
+        :disabled="loading"
+      >
         Reset password
       </Button>
     </form>

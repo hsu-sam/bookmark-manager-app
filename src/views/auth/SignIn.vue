@@ -1,6 +1,41 @@
-<script setup>
+<script setup lang="ts">
+import { ref } from "vue";
+import { useForm } from "vee-validate";
+import { useRouter } from "vue-router";
 import Input from "@/components/ui/Input.vue";
 import Button from "@/components/ui/Button.vue";
+import { useAuth } from "@/composables/useAuth";
+import { useToast } from "@/composables/useToast";
+import { emailRule, requiredRule } from "@/schemas/password.schemas";
+
+const router = useRouter();
+const { signIn } = useAuth();
+const toast = useToast();
+
+const loading = ref(false);
+
+const { handleSubmit } = useForm({
+  validationSchema: {
+    email: emailRule,
+    password: requiredRule("Password"),
+  },
+});
+
+const onSubmit = handleSubmit(async (values) => {
+  loading.value = true;
+  const { error } = await signIn(
+    values.email as string,
+    values.password as string,
+  );
+  loading.value = false;
+
+  if (error) {
+    toast.error(error.message);
+    return;
+  }
+
+  router.push({ name: "user.index" });
+});
 </script>
 
 <template>
@@ -13,10 +48,17 @@ import Button from "@/components/ui/Button.vue";
       <p>Welcome back! Please enter your details.</p>
     </div>
 
-    <form action="" class="flex flex-col gap-200">
-      <Input label="Email" type="email" class="w-full" />
-      <Input label="Password" type="password" class="w-full" />
-      <Button type="submit" class="w-full justify-center"> Log in </Button>
+    <form class="flex flex-col gap-200" @submit="onSubmit">
+      <Input name="email" label="Email" type="email" class="w-full" />
+      <Input name="password" label="Password" type="password" class="w-full" />
+      <Button
+        type="submit"
+        class="w-full justify-center"
+        :loading="loading"
+        :disabled="loading"
+      >
+        Log in
+      </Button>
     </form>
 
     <div class="flex flex-col items-center gap-150">

@@ -7,7 +7,7 @@
   ::before,
   ::backdrop,
   ::file-selector-button {
-    border-color: var(--color-border);
+    /* border-color: var(--color-neutral-500); */
     font-family: "Manrope", sans-serif;
   }
 

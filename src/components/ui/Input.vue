@@ -43,7 +43,7 @@ const reactiveType = ref(props.type);
         class="relative flex border rounded-lg py-2.5 px-4 font-medium items-center input-container"
         :class="{
           'text-green-600': isValid,
-          'text-error': meta.touched && !meta.valid,
+          'text-red-600': meta.touched && !meta.valid,
         }"
       >
         <input
@@ -54,9 +54,9 @@ const reactiveType = ref(props.type);
           :type="reactiveType"
           :class="{
             'bg-green-600': isValid,
-            'border-error': meta.touched && !meta.valid,
+            'border-red-600!': meta.touched && !meta.valid,
           }"
-          class="flex-1 outline-none focus:outline focus:outline-offset-1 focus:outline-teal-800"
+          class="border-neutral-500 flex-1 outline-none focus:outline focus:outline-offset-1 focus:outline-teal-800"
         />
         <div
           :class="{
@@ -87,7 +87,7 @@ const reactiveType = ref(props.type);
         </div>
       </div>
       <slot v-if="!errorMessage" name="helper" class="font-medium"></slot>
-      <ErrorMessage :name class="font-medium text-error" />
+      <ErrorMessage :name class="font-medium text-red-600" />
     </label>
   </Field>
 </template>
@@ -96,6 +96,7 @@ const reactiveType = ref(props.type);
 }
 
 .error {
+  color: var(--color-red-600);
 }
 
 .input-container:has(:focus-visible) {
