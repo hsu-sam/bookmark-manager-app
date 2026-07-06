@@ -22,7 +22,9 @@ const title = computed(() => {
   }
 
   if (tags.length) {
-    const prefix = isArchived ? "Archived bookmarks tagged" : "Bookmarks tagged";
+    const prefix = isArchived
+      ? "Archived bookmarks tagged"
+      : "Bookmarks tagged";
     return `${prefix}: ${tags.join(", ")}`;
   }
 
