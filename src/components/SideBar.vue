@@ -13,13 +13,17 @@ interface Section {
   icon: string;
 }
 
-defineProps<{
+const props = defineProps<{
   isOpen?: boolean; // only used on tablet/mobile
 }>();
 
 const emit = defineEmits<{
   close: [];
 }>();
+
+function closeSidebar() {
+  emit("close");
+}
 
 const sections: Section[] = [
   {
@@ -42,34 +46,36 @@ const isRouteActive = (routeName: string) => {
 </script>
 
 <template>
-  <!-- Overlay (tablet/mobile only) -->
-  <Transition name="fade">
-    <div
-      v-if="isOpen"
-      class="fixed inset-0 z-40 bg-black/40 lg:hidden"
-      @click="emit('close')"
-    />
-  </Transition>
+  <!-- Backdrop (tablet/mobile only) -->
+  <Teleport to="body">
+    <Transition name="sidebar-backdrop">
+      <div
+        v-if="props.isOpen"
+        class="fixed inset-0 z-40 h-screen w-screen bg-black/40 lg:hidden"
+        aria-hidden="true"
+        @click="closeSidebar"
+      />
+    </Transition>
+  </Teleport>
 
   <!-- Sidebar -->
-  <Transition name="slide">
-    <div
-      :class="[
-        'fixed lg:static top-0 left-0 z-50',
-        'flex flex-col gap-200 bg-neutral-0 w-74 h-screen border-r border-neutral-400 dark:bg-neutral-dark-800 dark:border-r-neutral-dark-500',
-        'transition-transform duration-300',
-        // On mobile/tablet: slide in/out. On lg: always visible
-        'lg:translate-x-0',
-        isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
-      ]"
-    >
+  <div
+    :class="[
+      'fixed lg:static top-0 left-0 z-50',
+      'flex flex-col gap-200 bg-neutral-0 w-74 h-screen border-r border-neutral-400 dark:bg-neutral-dark-800 dark:border-r-neutral-dark-500',
+      'transition-transform duration-300',
+      // On mobile/tablet: slide in/out. On lg: always visible
+      'lg:translate-x-0',
+      props.isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
+    ]"
+  >
       <div class="relative pt-250 px-250 pb-125">
         <!-- Close button: tablet/mobile only -->
         <Button
           variant="secondary"
           size="none"
           class="absolute top-3 right-200 border-none lg:hidden"
-          @click="emit('close')"
+          @click="closeSidebar"
         >
           <Icon icon="local:icon-close" class="w-5 h-5" />
         </Button>
@@ -86,7 +92,7 @@ const isRouteActive = (routeName: string) => {
             :class="{
               'active group': isRouteActive(section.name),
             }"
-            @click="emit('close')"
+            @click="closeSidebar"
           >
             <div
               class="flex items-center gap-100 py-100 px-150 rounded-8 mb-0.5 text-neutral-800 hover:bg-neutral-100 transition-colors group-[.active]:bg-neutral-100 group-[.active]:text-neutral-900 dark:text-neutral-dark-100 dark:hover:bg-neutral-dark-600 dark:group-[.active]:bg-neutral-dark-600 dark:group-[.active]:text-neutral-dark-0"
@@ -98,8 +104,19 @@ const isRouteActive = (routeName: string) => {
             </div>
           </router-link>
         </div>
-        <Tags />
+        <Tags @select="closeSidebar" />
       </div>
     </div>
-  </Transition>
 </template>
+
+<style scoped>
+.sidebar-backdrop-enter-active,
+.sidebar-backdrop-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.sidebar-backdrop-enter-from,
+.sidebar-backdrop-leave-to {
+  opacity: 0;
+}
+</style>

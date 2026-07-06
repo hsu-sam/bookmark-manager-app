@@ -74,26 +74,40 @@ async function handleTogglePin(id: string) {
 </script>
 
 <template>
-  <div class="bg-neutral-0 rounded-12 w-full dark:bg-neutral-dark-800">
-    <div class="flex flex-col justify-between h-full">
-      <div class="flex flex-col items-center gap-200 p-200">
-        <div class="flex items-center justify-between w-full">
-          <div class="flex items-center gap-150">
-            <div class="rounded-12 border border-neutral-300 bg-neutral-0 dark:border-neutral-dark-500 dark:bg-neutral-dark-800">
+  <div
+    class="flex h-full w-full flex-col overflow-hidden rounded-12 bg-neutral-0 dark:bg-neutral-dark-800"
+  >
+    <div class="flex flex-1 flex-col gap-200 p-200">
+        <div class="flex w-full min-w-0 items-center justify-between gap-150">
+          <div class="flex min-w-0 flex-1 items-center gap-150">
+            <div
+              class="shrink-0 rounded-12 border border-neutral-300 bg-neutral-0 dark:border-neutral-dark-500 dark:bg-neutral-dark-800"
+            >
               <img
                 :src="getFaviconUrl(bookmark.url)"
                 :alt="`${bookmark.title} Favicon`"
-                class="w-11 h-11 rounded-8"
+                class="h-11 w-11 rounded-8"
               />
             </div>
-            <div class="flex flex-col items-start gap-050">
-              <h2 class="text-h3 text-neutral-900 dark:text-neutral-dark-0">{{ bookmark.title }}</h2>
+            <div class="flex min-w-0 flex-1 flex-col items-start gap-050">
+              <h2
+                class="w-full truncate text-h3 text-neutral-900 dark:text-neutral-dark-0"
+                :title="bookmark.title"
+              >
+                {{ bookmark.title }}
+              </h2>
 
-              <p class="text-preset-5 text-neutral-600 dark:text-neutral-dark-100">{{ bookmark.url }}</p>
+              <p
+                class="w-full truncate text-preset-5 text-neutral-600 dark:text-neutral-dark-100"
+                :title="bookmark.url"
+              >
+                {{ bookmark.url }}
+              </p>
             </div>
           </div>
 
           <ActionsDropdown
+            class="shrink-0"
             :bookmark="bookmark"
             :archived="archived"
             @edit="openEditModal"
@@ -104,25 +118,36 @@ async function handleTogglePin(id: string) {
           />
         </div>
 
-        <div class="w-full border-b border-neutral-300 dark:border-neutral-dark-500"></div>
+        <div
+          class="w-full border-b border-neutral-300 dark:border-neutral-dark-500"
+        ></div>
 
-        <p class="text-p4 text-neutral-600 dark:text-neutral-dark-100">
-          {{ bookmark.description }}
-        </p>
-
-        <div class="flex flex-wrap items-center gap-150 w-full">
+        <div
+          class="flex min-h-0 w-full flex-1 flex-col justify-between gap-150"
+        >
           <p
-            v-for="(tag, index) in bookmark.tags"
-            :key="index"
-            class="px-100 py-025 bg-neutral-100 rounded-4 dark:bg-neutral-dark-600"
+            class="line-clamp-4 text-p4 text-neutral-600 dark:text-neutral-dark-100"
           >
-            {{ tag }}
+            {{ bookmark.description }}
           </p>
+
+          <div
+            v-if="bookmark.tags?.length"
+            class="flex w-full flex-wrap items-center gap-150"
+          >
+            <p
+              v-for="(tag, index) in bookmark.tags"
+              :key="index"
+              class="rounded-4 bg-neutral-100 px-100 py-025 dark:bg-neutral-dark-600"
+            >
+              {{ tag }}
+            </p>
+          </div>
         </div>
       </div>
 
       <div
-        class="flex items-center justify-between px-200 py-150 border-t border-neutral-300 text-neutral-800 dark:border-neutral-dark-500 dark:text-neutral-dark-100"
+        class="flex shrink-0 items-center justify-between border-t border-neutral-300 px-200 py-150 text-neutral-800 dark:border-neutral-dark-500 dark:text-neutral-dark-100"
       >
         <div class="flex items-center gap-200">
           <p class="flex items-center gap-100">
@@ -152,7 +177,6 @@ async function handleTogglePin(id: string) {
           Archived
         </p>
       </div>
-    </div>
 
     <EditBookmarkModal
       v-model="isEditModalOpen"

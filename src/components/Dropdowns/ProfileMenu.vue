@@ -1,14 +1,16 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
 import { Icon } from "@iconify/vue";
 import Dropdown from "../ui/Dropdown.vue";
+import AvatarPickerModal from "../modals/AvatarPickerModal.vue";
 import { useAuth } from "@/composables/useAuth";
 import { useTheme } from "@/composables/useTheme";
 
 const router = useRouter();
 const { user } = useAuth();
 const { theme, setTheme } = useTheme();
+const isAvatarModalOpen = ref(false);
 
 const fullName = computed(() => {
   const metadata = user.value?.user_metadata?.full_name;
@@ -17,6 +19,11 @@ const fullName = computed(() => {
 });
 
 const email = computed(() => user.value?.email ?? "");
+
+const avatarUrl = computed(() => {
+  const metadata = user.value?.user_metadata?.avatar_url;
+  return typeof metadata === "string" && metadata.trim() ? metadata.trim() : "";
+});
 
 function logout() {
   router.push({ name: "auth.logout" });
@@ -28,24 +35,39 @@ function logout() {
     <template #trigger>
       <button
         type="button"
-        class="flex items-center justify-center rounded-full border border-neutral-300 p-2 hover:bg-neutral-100 dark:border-neutral-dark-500 dark:hover:bg-neutral-dark-600"
+        class="flex items-center justify-center overflow-hidden rounded-full border border-neutral-300 hover:bg-neutral-100 dark:border-neutral-dark-500 dark:hover:bg-neutral-dark-600"
+        :class="avatarUrl ? 'p-0' : 'p-2'"
       >
+        <img
+          v-if="avatarUrl"
+          :src="avatarUrl"
+          :alt="`${fullName} avatar`"
+          class="size-10 rounded-full object-cover"
+        />
         <Icon
+          v-else
           icon="local:icon-person"
-          class="w-5 h-5 text-neutral-800 dark:text-neutral-dark-100"
+          class="h-5 w-5 text-neutral-800 dark:text-neutral-dark-100"
         />
       </button>
     </template>
 
     <template #content>
       <!-- Profile header -->
-      <div class="min-w-62 flex items-center gap-150 py-150 px-100">
+      <div class="flex min-w-62 items-center gap-150 px-100 py-150">
         <div
-          class="w-500 h-500 rounded-full border border-neutral-300 p-2 hover:bg-neutral-100 dark:border-neutral-dark-500 dark:hover:bg-neutral-dark-600"
+          class="flex size-500 shrink-0 items-center justify-center overflow-hidden rounded-full border border-neutral-300 p-2 dark:border-neutral-dark-500"
         >
+          <img
+            v-if="avatarUrl"
+            :src="avatarUrl"
+            :alt="`${fullName} avatar`"
+            class="size-8 rounded-full object-cover"
+          />
           <Icon
+            v-else
             icon="local:icon-person"
-            class="w-5 h-5 text-neutral-800 dark:text-neutral-dark-100"
+            class="h-5 w-5 text-neutral-800 dark:text-neutral-dark-100"
           />
         </div>
         <div>
@@ -98,17 +120,30 @@ function logout() {
         </div>
       </div>
 
-      <div class="h-px bg-neutral-100 mx-1 my-1 dark:bg-neutral-dark-500" />
+      <div class="mx-1 my-1 h-px bg-neutral-100 dark:bg-neutral-dark-500" />
+
+      <button
+        type="button"
+        class="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-neutral-800 outline-none hover:bg-neutral-100 dark:text-neutral-dark-100 dark:hover:bg-neutral-dark-600"
+        @click="isAvatarModalOpen = true"
+      >
+        <Icon icon="local:icon-person" class="h-4 w-4" />
+        Change avatar
+      </button>
+
+      <div class="mx-1 my-1 h-px bg-neutral-100 dark:bg-neutral-dark-500" />
 
       <!-- Logout -->
       <button
-        @click="logout"
         type="button"
-        class="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-neutral-800 cursor-pointer outline-none text-left hover:bg-neutral-100 dark:text-neutral-dark-100 dark:hover:bg-neutral-dark-600"
+        class="flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-neutral-800 outline-none hover:bg-neutral-100 dark:text-neutral-dark-100 dark:hover:bg-neutral-dark-600"
+        @click="logout"
       >
-        <Icon icon="local:icon-logout" class="w-4 h-4" />
+        <Icon icon="local:icon-logout" class="h-4 w-4" />
         Logout
       </button>
     </template>
   </Dropdown>
+
+  <AvatarPickerModal v-model="isAvatarModalOpen" />
 </template>

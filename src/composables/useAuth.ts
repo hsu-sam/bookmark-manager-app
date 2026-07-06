@@ -5,18 +5,33 @@ import { supabase } from "@/utils/supabase";
 const user = ref<User | null>(null);
 const session = ref<Session | null>(null);
 const isReady = ref(false);
+const isPasswordRecovery = ref(false);
 
 let initPromise: Promise<void> | null = null;
 
+function isRecoveryHash(): boolean {
+  const hash = window.location.hash.startsWith("#")
+    ? window.location.hash.slice(1)
+    : window.location.hash;
+  return new URLSearchParams(hash).get("type") === "recovery";
+}
+
 function initAuth(): Promise<void> {
   if (initPromise) return initPromise;
+
+  if (isRecoveryHash()) {
+    isPasswordRecovery.value = true;
+  }
 
   initPromise = supabase.auth.getSession().then(({ data }) => {
     session.value = data.session;
     user.value = data.session?.user ?? null;
     isReady.value = true;
 
-    supabase.auth.onAuthStateChange((_event, newSession) => {
+    supabase.auth.onAuthStateChange((event, newSession) => {
+      if (event === "PASSWORD_RECOVERY") {
+        isPasswordRecovery.value = true;
+      }
       session.value = newSession;
       user.value = newSession?.user ?? null;
     });
@@ -60,6 +75,9 @@ async function updatePassword(newPassword: string) {
   const { error } = await supabase.auth.updateUser({
     password: newPassword,
   });
+  if (!error) {
+    isPasswordRecovery.value = false;
+  }
   return { error };
 }
 
@@ -69,6 +87,7 @@ export function useAuth() {
     session,
     isReady,
     isAuthenticated,
+    isPasswordRecovery,
     initAuth,
     signIn,
     signUp,

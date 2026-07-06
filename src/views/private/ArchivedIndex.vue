@@ -4,18 +4,26 @@ import Card from "@/components/Card.vue";
 import { useBookmarks } from "@/composables/useBookmark.ts";
 import { useBookmarkSort } from "@/composables/useBookmarkSort";
 import { useBookmarkSearch } from "@/composables/useBookmarkSearch";
+import { useBookmarkTags } from "@/composables/useBookmarkTags";
 import CardSkeleton from "@/components/Skeletons/CardSkeleton.vue";
 
 const { bookmarks, loading, fetchBookmarks } = useBookmarks();
 const { sortBookmarks } = useBookmarkSort();
 const { searchQuery, filterBookmarks } = useBookmarkSearch();
+const { selectedTags, filterBookmarksByTags } = useBookmarkTags();
 
 const baseArchivedBookmarks = computed(() =>
   bookmarks.value.filter((bookmark) => bookmark.is_archived),
 );
 
 const archivedBookmarks = computed(() =>
-  sortBookmarks(filterBookmarks(baseArchivedBookmarks.value)),
+  sortBookmarks(
+    filterBookmarksByTags(filterBookmarks(baseArchivedBookmarks.value)),
+  ),
+);
+
+const hasActiveFilters = computed(
+  () => Boolean(searchQuery.value.trim()) || selectedTags.value.length > 0,
 );
 
 onMounted(() => {
@@ -44,10 +52,15 @@ onMounted(() => {
   </div>
 
   <p
-    v-else-if="searchQuery.trim() && baseArchivedBookmarks.length"
+    v-else-if="hasActiveFilters && baseArchivedBookmarks.length"
     class="text-p4 text-neutral-600"
   >
-    No archived bookmarks found for "{{ searchQuery.trim() }}".
+    <template v-if="searchQuery.trim()">
+      No archived bookmarks found for "{{ searchQuery.trim() }}".
+    </template>
+    <template v-else>
+      No archived bookmarks tagged: {{ selectedTags.join(", ") }}.
+    </template>
   </p>
 
   <p v-else class="text-p4 text-neutral-600">No archived bookmarks yet.</p>

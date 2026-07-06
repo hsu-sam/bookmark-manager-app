@@ -50,10 +50,17 @@ export const router = createRouter({
 // / Middlewares
 
 router.beforeEach(async (to) => {
-  const { isReady, isAuthenticated, initAuth } = useAuth();
+  const { isReady, isAuthenticated, isPasswordRecovery, initAuth } = useAuth();
 
   if (!isReady.value) {
     await initAuth();
+  }
+
+  if (
+    isPasswordRecovery.value &&
+    to.name !== "auth.reset-password"
+  ) {
+    return { name: "auth.reset-password" };
   }
 
   if (to.meta.authless) {
