@@ -66,7 +66,7 @@ function handleReset() {
         v-for="tag in tagsWithCounts"
         :key="tag.name"
         type="button"
-        class="flex w-full items-center gap-100 rounded-8 bg-neutral-0 px-150 py-100 text-left transition-colors hover:bg-neutral-100 dark:border-neutral-dark-500 dark:bg-neutral-dark-800 dark:hover:bg-neutral-dark-600"
+        class="flex w-full min-w-0 items-center gap-100 rounded-8 bg-neutral-0 px-150 py-100 text-left transition-colors hover:bg-neutral-100 dark:border-neutral-dark-500 dark:bg-neutral-dark-800 dark:hover:bg-neutral-dark-600"
         @click="handleTagClick(tag.name)"
       >
         <span
@@ -85,7 +85,7 @@ function handleReset() {
         </span>
 
         <span
-          class="flex-1 text-preset-4 font-medium text-neutral-800 dark:text-neutral-dark-100"
+          class="min-w-0 flex-1 truncate text-preset-4 font-medium text-neutral-800 dark:text-neutral-dark-100"
         >
           {{ tag.name }}
         </span>

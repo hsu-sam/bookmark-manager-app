@@ -62,14 +62,14 @@ const isRouteActive = (routeName: string) => {
   <div
     :class="[
       'fixed lg:static top-0 left-0 z-50',
-      'flex flex-col gap-200 bg-neutral-0 w-74 h-screen border-r border-neutral-400 dark:bg-neutral-dark-800 dark:border-r-neutral-dark-500',
+      'flex flex-col overflow-hidden bg-neutral-0 w-74 h-screen border-r border-neutral-400 dark:bg-neutral-dark-800 dark:border-r-neutral-dark-500',
       'transition-transform duration-300',
       // On mobile/tablet: slide in/out. On lg: always visible
       'lg:translate-x-0',
       props.isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
     ]"
   >
-      <div class="relative pt-250 px-250 pb-125">
+      <div class="relative shrink-0 pt-250 px-250 pb-125">
         <!-- Close button: tablet/mobile only -->
         <Button
           variant="secondary"
@@ -83,7 +83,9 @@ const isRouteActive = (routeName: string) => {
         <ThemeLogo />
       </div>
 
-      <div class="flex flex-col gap-200 pt-0 pb-250 px-200">
+      <div
+        class="flex min-h-0 flex-1 flex-col gap-200 overflow-y-auto pt-0 pb-250 px-200"
+      >
         <div>
           <router-link
             v-for="section in sections"
