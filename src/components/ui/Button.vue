@@ -25,7 +25,7 @@ const variants: Record<ButtonVariant, string> = {
   default:
     "flex items-center gap-050 text-p4 leading-p4 font-medium text-neutral-0 bg-teal-700 hover:bg-teal-800 focus:outline-2 focus:outline-offset-2 focus:outline-teal-800 rounded-8 inset-shadow-sm inset-shadow-neutral-dark-300/80 cursor-pointer",
   secondary:
-    "flex items-center gap-050 text-p4 leading-p4 font-medium text-neutral-900 bg-neutral-0 hover:bg-neutral-100 focus:outline-2 focus:outline-offset-2 focus:outline-teal-800 rounded-8 border border-neutral-400 cursor-pointer",
+    "flex items-center gap-050 text-p4 leading-p4 font-medium text-neutral-900 bg-neutral-0 hover:bg-neutral-100 focus:outline-2 focus:outline-offset-2 focus:outline-teal-800 rounded-8 border border-neutral-400 cursor-pointer dark:text-neutral-dark-0 dark:bg-neutral-dark-800 dark:hover:bg-neutral-dark-600 dark:border-neutral-dark-500",
 
   danger:
     "flex items-center gap-050 text-p4 leading-p4 font-medium text-neutral-0 bg-red-500 hover:bg-red-800 focus:outline-2 focus:outline-offset-2 focus:outline-red-800 rounded-8 inset-shadow-sm inset-shadow-red--800 cursor-pointer",

@@ -4,6 +4,7 @@ import { useForm } from "vee-validate";
 import { useRouter } from "vue-router";
 import Input from "@/components/ui/Input.vue";
 import Button from "@/components/ui/Button.vue";
+import ThemeLogo from "@/components/ThemeLogo.vue";
 import { useAuth } from "@/composables/useAuth";
 import { useToast } from "@/composables/useToast";
 import {
@@ -52,9 +53,9 @@ const onSubmit = handleSubmit(async (values) => {
 
 <template>
   <div
-    class="flex flex-col gap-400 px-250 py-400 md:px-400 md:py-500 bg-neutral-0 rounded-12 md:w-md"
+    class="flex flex-col gap-400 px-250 py-400 md:px-400 md:py-500 bg-neutral-0 rounded-12 md:w-md dark:bg-neutral-dark-800"
   >
-    <img src="/logo-light-theme.svg" alt="logo bookmark" class="w-53.5" />
+    <ThemeLogo class="w-53.5" />
     <div class="flex flex-col gap-075">
       <h1>Create your accouunt</h1>
       <p>
@@ -81,7 +82,7 @@ const onSubmit = handleSubmit(async (values) => {
         Already have an account?
         <router-link
           to="/"
-          class="text-neutral-900 font-semibold hover:underline"
+          class="text-neutral-900 font-semibold hover:underline dark:text-neutral-dark-0"
           >Log in</router-link
         >
       </p>

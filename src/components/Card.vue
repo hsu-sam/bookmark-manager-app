@@ -74,12 +74,12 @@ async function handleTogglePin(id: string) {
 </script>
 
 <template>
-  <div class="bg-neutral-0 rounded-12 w-full">
+  <div class="bg-neutral-0 rounded-12 w-full dark:bg-neutral-dark-800">
     <div class="flex flex-col justify-between h-full">
       <div class="flex flex-col items-center gap-200 p-200">
         <div class="flex items-center justify-between w-full">
           <div class="flex items-center gap-150">
-            <div class="rounded-12 border border-neutral-300 bg-neutral-0">
+            <div class="rounded-12 border border-neutral-300 bg-neutral-0 dark:border-neutral-dark-500 dark:bg-neutral-dark-800">
               <img
                 :src="getFaviconUrl(bookmark.url)"
                 :alt="`${bookmark.title} Favicon`"
@@ -87,9 +87,9 @@ async function handleTogglePin(id: string) {
               />
             </div>
             <div class="flex flex-col items-start gap-050">
-              <h2 class="text-h3 text-neutral-900">{{ bookmark.title }}</h2>
+              <h2 class="text-h3 text-neutral-900 dark:text-neutral-dark-0">{{ bookmark.title }}</h2>
 
-              <p class="text-preset-5 text-neutral-600">{{ bookmark.url }}</p>
+              <p class="text-preset-5 text-neutral-600 dark:text-neutral-dark-100">{{ bookmark.url }}</p>
             </div>
           </div>
 
@@ -104,9 +104,9 @@ async function handleTogglePin(id: string) {
           />
         </div>
 
-        <div class="w-full border-b border-neutral-300"></div>
+        <div class="w-full border-b border-neutral-300 dark:border-neutral-dark-500"></div>
 
-        <p class="text-p4 text-neutral-600">
+        <p class="text-p4 text-neutral-600 dark:text-neutral-dark-100">
           {{ bookmark.description }}
         </p>
 
@@ -114,7 +114,7 @@ async function handleTogglePin(id: string) {
           <p
             v-for="(tag, index) in bookmark.tags"
             :key="index"
-            class="px-100 py-025 bg-neutral-100 rounded-4"
+            class="px-100 py-025 bg-neutral-100 rounded-4 dark:bg-neutral-dark-600"
           >
             {{ tag }}
           </p>
@@ -122,7 +122,7 @@ async function handleTogglePin(id: string) {
       </div>
 
       <div
-        class="flex items-center justify-between px-200 py-150 border-t border-neutral-300"
+        class="flex items-center justify-between px-200 py-150 border-t border-neutral-300 text-neutral-800 dark:border-neutral-dark-500 dark:text-neutral-dark-100"
       >
         <div class="flex items-center gap-200">
           <p class="flex items-center gap-100">
@@ -147,7 +147,7 @@ async function handleTogglePin(id: string) {
 
         <p
           v-if="archived"
-          class="px-100 py-025 bg-neutral-100 rounded-4 text-preset-5 text-neutral-600"
+          class="px-100 py-025 bg-neutral-100 rounded-4 text-preset-5 text-neutral-600 dark:bg-neutral-dark-600 dark:text-neutral-dark-100"
         >
           Archived
         </p>

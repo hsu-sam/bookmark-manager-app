@@ -1,6 +1,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap");
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @layer base {
   *,
   ::after,
@@ -13,6 +15,10 @@
 
   button {
     @apply cursor-pointer;
+  }
+
+  .iconify {
+    color: inherit;
   }
 }
 
@@ -125,10 +131,23 @@ body {
   font-weight: 500;
 }
 
+.dark body {
+  background-color: var(--color-neutral-dark-900);
+  color: var(--color-neutral-dark-100);
+}
+
 h1,
 h2,
 h3,
 h4,
 h5 {
   color: var(--color-neutral-900);
+}
+
+.dark h1,
+.dark h2,
+.dark h3,
+.dark h4,
+.dark h5 {
+  color: var(--color-neutral-dark-0);
 }

@@ -42,7 +42,7 @@ const isOpen = defineModel<boolean>();
       />
 
       <DialogContent
-        class="flex flex-col gap-400 fixed left-1/2 top-1/2 z-100 -translate-x-1/2 -translate-y-1/2 rounded-16 p-400 bg-neutral-0 data-[state=open]:animate-contentShow"
+        class="flex flex-col gap-400 fixed left-1/2 top-1/2 z-100 -translate-x-1/2 -translate-y-1/2 rounded-16 p-400 bg-neutral-0 dark:bg-neutral-dark-800 data-[state=open]:animate-contentShow"
         :class="[contentClass, width || 'w-[90vw] max-w-[500px]']"
       >
         <!-- Close button -->

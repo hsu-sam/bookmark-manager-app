@@ -4,6 +4,7 @@ import { useForm } from "vee-validate";
 import { useRouter } from "vue-router";
 import Input from "@/components/ui/Input.vue";
 import Button from "@/components/ui/Button.vue";
+import ThemeLogo from "@/components/ThemeLogo.vue";
 import { useAuth } from "@/composables/useAuth";
 import { useToast } from "@/composables/useToast";
 import { emailRule, requiredRule } from "@/schemas/password.schemas";
@@ -40,13 +41,9 @@ const onSubmit = handleSubmit(async (values) => {
 
 <template>
   <div
-    class="flex flex-col gap-400 px-250 py-400 md:px-400 md:py-500 bg-neutral-0 rounded-12 md:min-w-md w-full"
+    class="flex flex-col gap-400 px-250 py-400 md:px-400 md:py-500 bg-neutral-0 rounded-12 md:max-w-md w-full dark:bg-neutral-dark-800"
   >
-    <img
-      src="/logo-light-theme.svg"
-      alt="logo bookmark"
-      class="w-53.5 mx-auto"
-    />
+    <ThemeLogo class="w-53.5 mx-auto" />
     <div class="flex flex-col gap-075">
       <h1>Log in to your account</h1>
       <p>Welcome back! Please enter your details.</p>
@@ -70,7 +67,7 @@ const onSubmit = handleSubmit(async (values) => {
         Forgot password?
         <router-link
           to="/forgot-password"
-          class="text-neutral-900 font-semibold hover:underline"
+          class="text-neutral-900 font-semibold hover:underline dark:text-neutral-dark-0"
           >Reset it</router-link
         >
       </p>
@@ -78,7 +75,7 @@ const onSubmit = handleSubmit(async (values) => {
         Don't have an account?
         <router-link
           to="/signup"
-          class="text-neutral-900 font-semibold hover:underline"
+          class="text-neutral-900 font-semibold hover:underline dark:text-neutral-dark-0"
           >Sign up</router-link
         >
       </p>

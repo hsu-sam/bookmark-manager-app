@@ -26,14 +26,14 @@ const sortBy = defineModel<BookmarkSortOption>({
       <DropdownMenuItem
         v-for="option in bookmarkSortOptions"
         :key="option.value"
-        class="flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-neutral-700 cursor-pointer outline-none select-none transition-colors focus:bg-neutral-100"
+        class="flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-neutral-700 cursor-pointer outline-none select-none transition-colors focus:bg-neutral-100 dark:text-neutral-dark-100 dark:focus:bg-neutral-dark-600"
         @click="sortBy = option.value"
       >
         <span>{{ option.label }}</span>
         <Icon
           v-if="sortBy === option.value"
-          icon="lucide:check"
-          class="w-4 h-4 shrink-0 text-teal-700"
+          icon="local:icon-check"
+          class="w-4 h-4 shrink-0 text-teal-700 dark:text-neutral-dark-300"
         />
       </DropdownMenuItem>
     </template>

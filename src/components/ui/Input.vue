@@ -30,20 +30,20 @@ const reactiveType = ref(props.type);
   >
     <label
       :class="[
-        'flex flex-col gap-1.5 has-disabled:opacity-40 text-small text-neutral-900',
+        'flex flex-col gap-1.5 has-disabled:opacity-40 text-small text-neutral-900 dark:text-neutral-dark-0',
         $attrs.class,
       ]"
     >
       <span class="font-semibold">
         {{ label }}
-        <em class="text-teal-700 not-italic" v-if="required">*</em>
+        <em class="text-teal-700 not-italic dark:text-neutral-dark-300" v-if="required">*</em>
       </span>
 
       <div
-        class="relative flex border rounded-lg py-2.5 px-4 font-medium items-center input-container"
+        class="relative flex border rounded-lg py-2.5 px-4 font-medium items-center input-container bg-neutral-0 border-neutral-400 transition-colors focus-within:border-teal-700 dark:bg-neutral-dark-800 dark:border-neutral-dark-500 dark:focus-within:border-neutral-dark-300"
         :class="{
           'text-green-600': isValid,
-          'text-red-600': meta.touched && !meta.valid,
+          'text-red-600 border-red-600 dark:border-red-600': meta.touched && !meta.valid,
         }"
       >
         <input
@@ -54,9 +54,8 @@ const reactiveType = ref(props.type);
           :type="reactiveType"
           :class="{
             'bg-green-600': isValid,
-            'border-red-600!': meta.touched && !meta.valid,
           }"
-          class="border-neutral-500 flex-1 outline-none focus:outline focus:outline-offset-1 focus:outline-teal-800"
+          class="flex-1 border-0 bg-transparent outline-none text-neutral-900 placeholder:text-neutral-500 focus:outline-none dark:text-neutral-dark-0 dark:placeholder:text-neutral-dark-100/60"
         />
         <div
           :class="{
@@ -68,19 +67,17 @@ const reactiveType = ref(props.type);
             <button
               type="button"
               v-if="type === 'password'"
-              class="cursor-pointer"
+              class="cursor-pointer text-neutral-500 dark:text-neutral-dark-100"
             >
               <Icon
                 v-if="reactiveType === 'password'"
                 @click="reactiveType = 'text'"
                 icon="lucide:eye"
-                class="text-secondary-gray"
               />
               <Icon
                 v-else
                 @click="reactiveType = 'password'"
                 icon="lucide:eye-off"
-                class="text-secondary-gray"
               />
             </button>
           </slot>

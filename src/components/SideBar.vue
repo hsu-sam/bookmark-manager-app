@@ -3,6 +3,7 @@
 import Tags from "./ui/Tags.vue";
 import { Icon } from "@iconify/vue";
 import Button from "./ui/Button.vue";
+import ThemeLogo from "./ThemeLogo.vue";
 import { useRoute } from "vue-router";
 
 interface Section {
@@ -55,7 +56,7 @@ const isRouteActive = (routeName: string) => {
     <div
       :class="[
         'fixed lg:static top-0 left-0 z-50',
-        'flex flex-col gap-200 bg-neutral-0 w-74 h-screen border-r border-neutral-400',
+        'flex flex-col gap-200 bg-neutral-0 w-74 h-screen border-r border-neutral-400 dark:bg-neutral-dark-800 dark:border-r-neutral-dark-500',
         'transition-transform duration-300',
         // On mobile/tablet: slide in/out. On lg: always visible
         'lg:translate-x-0',
@@ -73,7 +74,7 @@ const isRouteActive = (routeName: string) => {
           <Icon icon="local:icon-close" class="w-5 h-5" />
         </Button>
 
-        <img src="/logo-light-theme.svg" alt="logo bookmark" />
+        <ThemeLogo />
       </div>
 
       <div class="flex flex-col gap-200 pt-0 pb-250 px-200">
@@ -88,7 +89,7 @@ const isRouteActive = (routeName: string) => {
             @click="emit('close')"
           >
             <div
-              class="flex items-center gap-100 py-100 px-150 rounded-8 mb-0.5 hover:bg-neutral-100 transition-colors group-[.active]:bg-neutral-100 group-[.active]:text-neutral-900"
+              class="flex items-center gap-100 py-100 px-150 rounded-8 mb-0.5 text-neutral-800 hover:bg-neutral-100 transition-colors group-[.active]:bg-neutral-100 group-[.active]:text-neutral-900 dark:text-neutral-dark-100 dark:hover:bg-neutral-dark-600 dark:group-[.active]:bg-neutral-dark-600 dark:group-[.active]:text-neutral-dark-0"
             >
               <Icon :icon="section.icon" class="w-5 h-5" />
               <span class="text-preset-3 font-semibold">

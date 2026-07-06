@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { computed, onMounted } from "vue";
 import Card from "@/components/Card.vue";
-import CardSkeleton from "@/components/CardSkeleton.vue";
 import { useBookmarks } from "@/composables/useBookmark.ts";
 import { useBookmarkSort } from "@/composables/useBookmarkSort";
 import { useBookmarkSearch } from "@/composables/useBookmarkSearch";
+import CardSkeleton from "@/components/Skeletons/CardSkeleton.vue";
 
 const { bookmarks, loading, fetchBookmarks } = useBookmarks();
 const { sortBookmarks } = useBookmarkSort();

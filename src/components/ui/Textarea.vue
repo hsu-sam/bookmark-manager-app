@@ -33,20 +33,20 @@ const isOverLimit = computed(() => charCount.value > props.maxLength);
   >
     <label
       :class="[
-        'flex flex-col gap-1.5 has-disabled:opacity-40 text-small text-neutral-900',
+        'flex flex-col gap-1.5 has-disabled:opacity-40 text-small text-neutral-900 dark:text-neutral-dark-0',
         $attrs.class,
       ]"
     >
       <span class="font-semibold">
         {{ label }}
-        <em class="text-teal-700 not-italic" v-if="required">*</em>
+        <em class="text-teal-700 not-italic dark:text-neutral-dark-300" v-if="required">*</em>
       </span>
 
       <div
-        class="flex flex-col border rounded-lg py-2.5 px-4 font-medium textarea-container"
+        class="flex flex-col border rounded-lg py-2.5 px-4 font-medium textarea-container bg-neutral-0 border-neutral-400 transition-colors focus-within:border-teal-700 dark:bg-neutral-dark-800 dark:border-neutral-dark-500 dark:focus-within:border-neutral-dark-300"
         :class="{
-          'border-error': (meta.touched && !meta.valid) || isOverLimit,
-          'ring-1 ring-error': isOverLimit,
+          'border-red-600 dark:border-red-600': (meta.touched && !meta.valid) || isOverLimit,
+          'ring-1 ring-red-600': isOverLimit,
         }"
       >
         <textarea
@@ -56,23 +56,23 @@ const isOverLimit = computed(() => charCount.value > props.maxLength);
           :rows
           :placeholder
           v-model="model"
-          class="flex-1 outline-none resize-y focus:outline focus:outline-offset-1 focus:outline-teal-800 min-h-[80px]"
+          class="flex-1 outline-none resize-y min-h-[80px] bg-transparent text-neutral-900 placeholder:text-neutral-500 focus:outline-none dark:text-neutral-dark-0 dark:placeholder:text-neutral-dark-100/60"
         />
       </div>
 
       <div class="flex items-center justify-between">
         <div class="flex-1">
           <slot v-if="!errorMessage" name="helper" class="font-medium" />
-          <ErrorMessage :name class="font-medium text-error" />
+          <ErrorMessage :name class="font-medium text-red-600" />
         </div>
         <span
           class="text-xs font-medium tabular-nums shrink-0"
           :class="
             isOverLimit
-              ? 'text-error'
+              ? 'text-red-600'
               : charCount >= maxLength * 0.9
                 ? 'text-amber-500'
-                : 'text-secondary-gray'
+                : 'text-neutral-500 dark:text-neutral-dark-100'
           "
         >
           {{ charCount }}/{{ maxLength }}
