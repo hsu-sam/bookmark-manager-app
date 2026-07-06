@@ -6,6 +6,9 @@ import ActionsDropdown from "./Dropdowns/ActionsDropdown.vue";
 import { useDate } from "../composables/useDate";
 import type { Bookmark } from "@/types/bookmark.ts";
 import EditBookmarkModal from "./modals/EditBookmarkModal.vue";
+import ArchivedBookmarkModal from "./modals/ArchivedBookmarkModal.vue";
+import UnarchivedBookmarkModal from "./modals/UnarchivedBookmarkModal.vue";
+import DeleteBookmarkModal from "./modals/DeleteBookmark.vue";
 import { useBookmarks } from "@/composables/useBookmark.ts";
 import { useToast } from "@/composables/useToast.ts";
 
@@ -27,7 +30,10 @@ const emit = defineEmits<{
 }>();
 
 const isEditModalOpen = ref(false);
-const { togglePin, archiveBookmark, unarchiveBookmark } = useBookmarks();
+const isArchiveModalOpen = ref(false);
+const isUnarchiveModalOpen = ref(false);
+const isDeleteModalOpen = ref(false);
+const { togglePin } = useBookmarks();
 
 const getFaviconUrl = (url: string) => {
   try {
@@ -43,6 +49,18 @@ function openEditModal() {
   isEditModalOpen.value = true;
 }
 
+function openArchiveModal() {
+  isArchiveModalOpen.value = true;
+}
+
+function openUnarchiveModal() {
+  isUnarchiveModalOpen.value = true;
+}
+
+function openDeleteModal() {
+  isDeleteModalOpen.value = true;
+}
+
 async function handleTogglePin(id: string) {
   const result = await togglePin(id, props.bookmark.is_pinned);
 
@@ -53,32 +71,10 @@ async function handleTogglePin(id: string) {
 
   toast.success(result.is_pinned ? "Bookmark pinned." : "Bookmark unpinned.");
 }
-
-async function handleArchive(id: string) {
-  const result = await archiveBookmark(id);
-
-  if (!result) {
-    toast.error("Failed to archive bookmark.");
-    return;
-  }
-
-  toast.success("Bookmark archived.");
-}
-
-async function handleUnarchive(id: string) {
-  const result = await unarchiveBookmark(id);
-
-  if (!result) {
-    toast.error("Failed to unarchive bookmark.");
-    return;
-  }
-
-  toast.success("Bookmark restored.");
-}
 </script>
 
 <template>
-  <div class="bg-neutral-0 rounded-12 max-w-84.5">
+  <div class="bg-neutral-0 rounded-12 w-full">
     <div class="flex flex-col justify-between h-full">
       <div class="flex flex-col items-center gap-200 p-200">
         <div class="flex items-center justify-between w-full">
@@ -102,8 +98,9 @@ async function handleUnarchive(id: string) {
             :archived="archived"
             @edit="openEditModal"
             @toggle-pin="handleTogglePin"
-            @archive="handleArchive"
-            @unarchive="handleUnarchive"
+            @archive="openArchiveModal"
+            @unarchive="openUnarchiveModal"
+            @delete="openDeleteModal"
           />
         </div>
 
@@ -161,6 +158,24 @@ async function handleUnarchive(id: string) {
       v-model="isEditModalOpen"
       :bookmark="bookmark"
       @updated="emit('updated')"
+    />
+
+    <ArchivedBookmarkModal
+      v-if="!archived"
+      v-model="isArchiveModalOpen"
+      :bookmark="bookmark"
+    />
+
+    <UnarchivedBookmarkModal
+      v-if="archived"
+      v-model="isUnarchiveModalOpen"
+      :bookmark="bookmark"
+    />
+
+    <DeleteBookmarkModal
+      v-if="archived"
+      v-model="isDeleteModalOpen"
+      :bookmark="bookmark"
     />
   </div>
 </template>

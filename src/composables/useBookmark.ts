@@ -93,6 +93,26 @@ export function useBookmarks() {
     return updateBookmark(id, { is_archived: false });
   };
 
+  const deleteBookmark = async (id: string) => {
+    loading.value = true;
+    error.value = null;
+
+    const { error: err } = await supabase
+      .from("bookmarks")
+      .delete()
+      .eq("id", id);
+
+    loading.value = false;
+
+    if (err) {
+      error.value = err.message;
+      return false;
+    }
+
+    bookmarks.value = bookmarks.value.filter((bookmark) => bookmark.id !== id);
+    return true;
+  };
+
   const recordVisit = async (id: string) => {
     const bookmark = bookmarks.value.find((b) => b.id === id);
     if (!bookmark) return null;
@@ -131,6 +151,7 @@ export function useBookmarks() {
     togglePin,
     archiveBookmark,
     unarchiveBookmark,
+    deleteBookmark,
     recordVisit,
   };
 }

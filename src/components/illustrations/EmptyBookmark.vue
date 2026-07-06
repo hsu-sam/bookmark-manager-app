@@ -1,13 +1,12 @@
 <template>
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width="500"
-    height="300"
     viewBox="0 0 862.70323 644.78592"
     xmlns:xlink="http://www.w3.org/1999/xlink"
     role="img"
     artist="Katerina Limpitsouni"
     source="https://undraw.co/"
+    class="h-auto w-full"
   >
     <polygon
       points="629.943 612.644 612.777 612.644 604.608 546.435 629.943 546.435 629.943 612.644"

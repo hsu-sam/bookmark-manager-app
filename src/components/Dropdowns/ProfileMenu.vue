@@ -1,10 +1,20 @@
 <script setup lang="ts">
+import { computed } from "vue";
 import { useRouter } from "vue-router";
-
 import { Icon } from "@iconify/vue";
 import Dropdown from "../ui/Dropdown.vue";
+import { useAuth } from "@/composables/useAuth";
 
 const router = useRouter();
+const { user } = useAuth();
+
+const fullName = computed(() => {
+  const metadata = user.value?.user_metadata?.full_name;
+  if (typeof metadata === "string" && metadata.trim()) return metadata.trim();
+  return "User";
+});
+
+const email = computed(() => user.value?.email ?? "");
 
 function logout() {
   router.push({ name: "auth.logout" });
@@ -31,8 +41,8 @@ function logout() {
           <Icon icon="lucide:user" class="w-5 h-5" />
         </div>
         <div>
-          <p class="text-preset-4 font-bold text-neutral-900">Samuel</p>
-          <p class="text-preset-4 text-neutral-800">segunhounsou@gmail.com</p>
+          <p class="text-preset-4 font-bold text-neutral-900">{{ fullName }}</p>
+          <p class="text-preset-4 text-neutral-800">{{ email }}</p>
         </div>
       </div>
 

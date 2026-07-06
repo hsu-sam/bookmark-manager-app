@@ -45,7 +45,7 @@ const isRouteActive = (routeName: string) => {
   <Transition name="fade">
     <div
       v-if="isOpen"
-      class="fixed inset-0 bg-black/40 z-20 lg:hidden"
+      class="fixed inset-0 z-40 bg-black/40 lg:hidden"
       @click="emit('close')"
     />
   </Transition>
@@ -54,7 +54,7 @@ const isRouteActive = (routeName: string) => {
   <Transition name="slide">
     <div
       :class="[
-        'fixed lg:static top-0 left-0 z-30',
+        'fixed lg:static top-0 left-0 z-50',
         'flex flex-col gap-200 bg-neutral-0 w-74 h-screen border-r border-neutral-400',
         'transition-transform duration-300',
         // On mobile/tablet: slide in/out. On lg: always visible
@@ -85,6 +85,7 @@ const isRouteActive = (routeName: string) => {
             :class="{
               'active group': isRouteActive(section.name),
             }"
+            @click="emit('close')"
           >
             <div
               class="flex items-center gap-100 py-100 px-150 rounded-8 mb-0.5 hover:bg-neutral-100 transition-colors group-[.active]:bg-neutral-100 group-[.active]:text-neutral-900"

@@ -50,7 +50,10 @@ onMounted(() => {
     No bookmarks found for "{{ searchQuery.trim() }}".
   </p>
 
-  <div v-else class="flex flex-col items-center justify-center h-full">
-    <EmptyBookmark />
+  <div
+    v-else
+    class="flex flex-1 flex-col items-center justify-center w-full px-200 py-300 sm:px-400 sm:py-400"
+  >
+    <EmptyBookmark class="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg" />
   </div>
 </template>

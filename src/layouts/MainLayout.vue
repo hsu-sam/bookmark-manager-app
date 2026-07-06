@@ -1,10 +1,19 @@
 <script setup>
-import { ref } from "vue";
+import { ref, watch } from "vue";
+import { useRoute } from "vue-router";
 import Header from "@/components/Header.vue";
 import SideBar from "@/components/SideBar.vue";
 import BookmarkHeader from "@/components/BookmarkHeader.vue";
 
+const route = useRoute();
 const sidebarOpen = ref(false);
+
+watch(
+  () => route.fullPath,
+  () => {
+    sidebarOpen.value = false;
+  },
+);
 </script>
 
 <template>

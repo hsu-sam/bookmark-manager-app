@@ -41,11 +41,12 @@ const onSubmit = handleSubmit(async (values) => {
   }
 
   if (data.session) {
-    router.push({ name: "auth.signin" });
+    router.push({ path: "/u" });
     return;
   }
 
   toast.success("Check your email to confirm your account.");
+  router.push({ name: "auth.signin" });
 });
 </script>
 
