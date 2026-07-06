@@ -48,12 +48,12 @@ const isOpen = defineModel<boolean>();
         <!-- Close button -->
         <DialogClose
           v-if="!hideDefaultClose"
-          class="absolute right-4 top-4"
+          class="absolute top-3 right-200"
           aria-label="Close"
         >
-          <Button variant="secondary">
-            <Icon icon="local:icon-close" class="h-5 w-5"
-          /></Button>
+          <Button variant="secondary" size="none" class="border-none">
+            <Icon icon="local:icon-close" class="w-5 h-5" />
+          </Button>
         </DialogClose>
 
         <!-- Header -->
