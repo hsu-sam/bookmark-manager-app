@@ -40,9 +40,13 @@ const onSubmit = handleSubmit(async (values) => {
 
 <template>
   <div
-    class="flex flex-col gap-400 px-250 py-400 md:px-400 md:py-500 bg-neutral-0 rounded-12 md:min-w-md"
+    class="flex flex-col gap-400 px-250 py-400 md:px-400 md:py-500 bg-neutral-0 rounded-12 md:min-w-md w-full"
   >
-    <img src="/logo-light-theme.svg" alt="logo bookmark" class="w-53.5" />
+    <img
+      src="/logo-light-theme.svg"
+      alt="logo bookmark"
+      class="w-53.5 mx-auto"
+    />
     <div class="flex flex-col gap-075">
       <h1>Log in to your account</h1>
       <p>Welcome back! Please enter your details.</p>
