@@ -91,8 +91,7 @@ const onSubmit = handleSubmit(async (values) => {
   loading.value = true;
 
   const folderId =
-    selectedFolderId.value &&
-    selectedFolderId.value !== UNCATEGORIZED_FOLDER_ID
+    selectedFolderId.value && selectedFolderId.value !== UNCATEGORIZED_FOLDER_ID
       ? selectedFolderId.value
       : null;
 

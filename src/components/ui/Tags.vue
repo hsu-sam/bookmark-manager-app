@@ -44,7 +44,7 @@ function handleReset() {
 </script>
 
 <template>
-  <SidebarSection title="Tags">
+  <SidebarSection title="Tags" :default-open="false">
     <template #actions>
       <button
         v-if="selectedTags.length"

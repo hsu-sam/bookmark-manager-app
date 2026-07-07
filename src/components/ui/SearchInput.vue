@@ -1,13 +1,19 @@
 <script setup lang="ts">
 import { Icon } from "@iconify/vue";
+import { ref } from "vue";
 
 export interface InputProps {
   disabled?: boolean;
   placeholder?: string;
 }
-const props = defineProps<InputProps>();
+defineProps<InputProps>();
 
 const model = defineModel();
+const inputRef = ref<HTMLInputElement | null>(null);
+
+defineExpose({
+  focus: () => inputRef.value?.focus(),
+});
 </script>
 <template>
   <label
@@ -18,11 +24,13 @@ const model = defineModel();
   >
     <Icon icon="local:icon-search" size="20" />
     <input
+      ref="inputRef"
       name="search"
       v-model="model"
       :placeholder
       :disabled
       type="search"
+      aria-keyshortcuts="/"
       class="flex-1 w-full border-0 bg-transparent focus-visible:outline-none placeholder:text-neutral-500 dark:text-neutral-dark-0 dark:placeholder:text-neutral-dark-100/60"
     />
   </label>

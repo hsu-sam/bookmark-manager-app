@@ -5,15 +5,26 @@ import SearchInput from "./ui/SearchInput.vue";
 import AddBookmarkModal from "./modals/AddBookmarkModal.vue";
 import ProfileMenu from "./Dropdowns/ProfileMenu.vue";
 import { useBookmarkSearch } from "@/composables/useBookmarkSearch";
+import { useKeyboardShortcuts } from "@/composables/useKeyboardShortcuts";
 import { ref } from "vue";
 
 const emit = defineEmits<{ openSidebar: [] }>();
 const isAddBookmarkModal = ref(false);
+const searchInputRef = ref<InstanceType<typeof SearchInput> | null>(null);
 const { searchQuery } = useBookmarkSearch();
 
 function openAddBookmarkModal() {
   isAddBookmarkModal.value = true;
 }
+
+function focusSearchInput() {
+  searchInputRef.value?.focus();
+}
+
+useKeyboardShortcuts({
+  onAdd: openAddBookmarkModal,
+  onFocusSearch: focusSearchInput,
+});
 </script>
 
 <template>
@@ -25,6 +36,7 @@ function openAddBookmarkModal() {
         ><Icon icon="local:icon-menu-hamburger"
       /></Button>
       <SearchInput
+        ref="searchInputRef"
         v-model="searchQuery"
         class="md:min-w-[320px]"
         placeholder="Search bookmarks..."
@@ -34,6 +46,8 @@ function openAddBookmarkModal() {
     <div class="flex items-center gap-125 md:gap-200">
       <Button
         class="flex flex-row items-center gap-100"
+        title="Add bookmark (A)"
+        aria-keyshortcuts="a"
         @click="openAddBookmarkModal"
       >
         <Icon icon="local:icon-add" class="w-5 h-5" />

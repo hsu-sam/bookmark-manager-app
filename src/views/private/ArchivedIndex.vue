@@ -7,6 +7,7 @@ import { useBookmarkSort } from "@/composables/useBookmarkSort";
 import { useBookmarkSearch } from "@/composables/useBookmarkSearch";
 import { useBookmarkTags } from "@/composables/useBookmarkTags";
 import { useBookmarkFolders } from "@/composables/useBookmarkFolders";
+import EmptyBookmark from "@/components/illustrations/EmptyBookmark.vue";
 import CardSkeleton from "@/components/Skeletons/CardSkeleton.vue";
 import Pagination from "@/components/ui/Pagination.vue";
 import { usePagination } from "@/composables/usePagination";
@@ -55,7 +56,7 @@ onMounted(() => {
       <CardSkeleton v-for="n in 6" :key="n" />
     </div>
 
-    <div v-else-if="archivedBookmarks.length" class="flex flex-1 flex-col">
+    <div v-else-if="archivedBookmarks.length" class="flex flex-1 flex-col gap-400">
       <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card
           v-for="bookmark in paginatedItems"
@@ -90,6 +91,13 @@ onMounted(() => {
       </template>
     </p>
 
-    <p v-else class="text-p4 text-neutral-600">No archived bookmarks yet.</p>
+    <div
+      v-else
+      class="flex flex-1 flex-col items-center justify-center w-full px-200 py-300 sm:px-400 sm:py-400"
+    >
+      <EmptyBookmark
+        class="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg"
+      />
+    </div>
   </div>
 </template>
