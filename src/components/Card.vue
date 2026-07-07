@@ -9,6 +9,7 @@ import EditBookmarkModal from "./modals/EditBookmarkModal.vue";
 import ArchivedBookmarkModal from "./modals/ArchivedBookmarkModal.vue";
 import UnarchivedBookmarkModal from "./modals/UnarchivedBookmarkModal.vue";
 import DeleteBookmarkModal from "./modals/DeleteBookmark.vue";
+import MoveToFolderModal from "./modals/MoveToFolderModal.vue";
 import { useBookmarks } from "@/services/useBookmark.ts";
 import { useToast } from "@/composables/useToast.ts";
 
@@ -33,6 +34,7 @@ const isEditModalOpen = ref(false);
 const isArchiveModalOpen = ref(false);
 const isUnarchiveModalOpen = ref(false);
 const isDeleteModalOpen = ref(false);
+const isMoveFolderModalOpen = ref(false);
 const { togglePin } = useBookmarks();
 
 const getFaviconUrl = (url: string) => {
@@ -59,6 +61,10 @@ function openUnarchiveModal() {
 
 function openDeleteModal() {
   isDeleteModalOpen.value = true;
+}
+
+function openMoveFolderModal() {
+  isMoveFolderModalOpen.value = true;
 }
 
 async function handleTogglePin(id: string) {
@@ -111,6 +117,7 @@ async function handleTogglePin(id: string) {
           :bookmark="bookmark"
           :archived="archived"
           @edit="openEditModal"
+          @move-to-folder="openMoveFolderModal"
           @toggle-pin="handleTogglePin"
           @archive="openArchiveModal"
           @unarchive="openUnarchiveModal"
@@ -195,6 +202,12 @@ async function handleTogglePin(id: string) {
     <DeleteBookmarkModal
       v-if="archived"
       v-model="isDeleteModalOpen"
+      :bookmark="bookmark"
+    />
+
+    <MoveToFolderModal
+      v-if="!archived"
+      v-model="isMoveFolderModalOpen"
       :bookmark="bookmark"
     />
   </div>

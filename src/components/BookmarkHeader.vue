@@ -5,15 +5,18 @@ import SortDropdown from "./Dropdowns/SortDropdown.vue";
 import { useBookmarkSort } from "@/composables/useBookmarkSort";
 import { useBookmarkSearch } from "@/composables/useBookmarkSearch";
 import { useBookmarkTags } from "@/composables/useBookmarkTags";
+import { useBookmarkFolders } from "@/composables/useBookmarkFolders";
 
 const route = useRoute();
 const { sortBy } = useBookmarkSort();
 const { searchQuery } = useBookmarkSearch();
 const { selectedTags } = useBookmarkTags();
+const { selectedFolderName } = useBookmarkFolders();
 
 const title = computed(() => {
   const query = searchQuery.value.trim();
   const tags = selectedTags.value;
+  const folderName = selectedFolderName.value;
   const isArchived = route.name === "user.archived";
   const defaultTitle = isArchived ? "Archived Bookmarks" : "All Bookmarks";
 
@@ -26,6 +29,10 @@ const title = computed(() => {
       ? "Archived bookmarks tagged"
       : "Bookmarks tagged";
     return `${prefix}: ${tags.join(", ")}`;
+  }
+
+  if (folderName) {
+    return `Folder: ${folderName}`;
   }
 
   return defaultTitle;

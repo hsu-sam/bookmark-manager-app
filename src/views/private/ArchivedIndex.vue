@@ -2,17 +2,21 @@
 import { computed, onMounted } from "vue";
 import Card from "@/components/Card.vue";
 import { useBookmarks } from "@/services/useBookmark";
+import { useFolders } from "@/services/useFolder";
 import { useBookmarkSort } from "@/composables/useBookmarkSort";
 import { useBookmarkSearch } from "@/composables/useBookmarkSearch";
 import { useBookmarkTags } from "@/composables/useBookmarkTags";
+import { useBookmarkFolders } from "@/composables/useBookmarkFolders";
 import CardSkeleton from "@/components/Skeletons/CardSkeleton.vue";
 import Pagination from "@/components/ui/Pagination.vue";
 import { usePagination } from "@/composables/usePagination";
 
 const { bookmarks, loading, fetchBookmarks } = useBookmarks();
+const { fetchFolders } = useFolders();
 const { sortBookmarks } = useBookmarkSort();
 const { searchQuery, filterBookmarks } = useBookmarkSearch();
 const { selectedTags, filterBookmarksByTags } = useBookmarkTags();
+const { filterBookmarksByFolder, selectedFolderName } = useBookmarkFolders();
 
 const baseArchivedBookmarks = computed(() =>
   bookmarks.value.filter((bookmark) => bookmark.is_archived),
@@ -20,12 +24,17 @@ const baseArchivedBookmarks = computed(() =>
 
 const archivedBookmarks = computed(() =>
   sortBookmarks(
-    filterBookmarksByTags(filterBookmarks(baseArchivedBookmarks.value)),
+    filterBookmarksByTags(
+      filterBookmarksByFolder(filterBookmarks(baseArchivedBookmarks.value)),
+    ),
   ),
 );
 
 const hasActiveFilters = computed(
-  () => Boolean(searchQuery.value.trim()) || selectedTags.value.length > 0,
+  () =>
+    Boolean(searchQuery.value.trim()) ||
+    selectedTags.value.length > 0 ||
+    Boolean(selectedFolderName.value),
 );
 
 const { currentPage, totalPages, paginatedItems, pageSize } =
@@ -33,6 +42,7 @@ const { currentPage, totalPages, paginatedItems, pageSize } =
 
 onMounted(() => {
   fetchBookmarks();
+  fetchFolders();
 });
 </script>
 
@@ -72,8 +82,11 @@ onMounted(() => {
       <template v-if="searchQuery.trim()">
         No archived bookmarks found for "{{ searchQuery.trim() }}".
       </template>
-      <template v-else>
+      <template v-else-if="selectedTags.length">
         No archived bookmarks tagged: {{ selectedTags.join(", ") }}.
+      </template>
+      <template v-else-if="selectedFolderName">
+        No archived bookmarks in folder "{{ selectedFolderName }}".
       </template>
     </p>
 

@@ -40,7 +40,10 @@ function toggle() {
         </span>
       </button>
 
-      <div v-if="$slots.actions" class="shrink-0 pr-050">
+      <div
+        v-if="$slots.actions"
+        class="flex shrink-0 items-center gap-050 pr-050"
+      >
         <slot name="actions" />
       </div>
     </div>

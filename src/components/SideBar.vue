@@ -1,7 +1,7 @@
 <!-- Sidebar.vue -->
 <script setup lang="ts">
 import Tags from "./ui/Tags.vue";
-import SidebarSection from "./ui/SidebarSection.vue";
+import Folders from "./ui/Folders.vue";
 import { Icon } from "@iconify/vue";
 import Button from "./ui/Button.vue";
 import ThemeLogo from "./ThemeLogo.vue";
@@ -114,13 +114,7 @@ const isRouteActive = (routeName: string) => {
         </router-link>
       </div>
 
-      <SidebarSection title="Folders" :default-open="false">
-        <p
-          class="px-150 text-preset-4 text-neutral-500 dark:text-neutral-dark-100"
-        >
-          No folders yet
-        </p>
-      </SidebarSection>
+      <Folders @select="closeSidebar" />
 
       <Tags @select="closeSidebar" />
     </div>

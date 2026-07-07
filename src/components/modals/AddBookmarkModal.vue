@@ -9,12 +9,15 @@ import { requiredRule } from "@/schemas/bookmark.schemas.ts";
 import { useFieldValue, useForm } from "vee-validate";
 import { useBookmarks } from "@/services/useBookmark.ts";
 import { useFetchMetadata } from "@/services/useFetchMetadata.ts";
+import { useBookmarkFolders } from "@/composables/useBookmarkFolders";
+import { UNCATEGORIZED_FOLDER_ID } from "@/types/folder";
 import { isValidUrl } from "@/utils/url";
 import type { Bookmark } from "@/types/bookmark.ts";
 
 const toast = useToast();
 const { addBookmark, findDuplicateBookmark } = useBookmarks();
 const { fetchMetadata, isFetchingMetadata } = useFetchMetadata();
+const { selectedFolderId } = useBookmarkFolders();
 
 const isOpen = defineModel<boolean>();
 const loading = ref(false);
@@ -86,6 +89,13 @@ const onSubmit = handleSubmit(async (values) => {
   }
 
   loading.value = true;
+
+  const folderId =
+    selectedFolderId.value &&
+    selectedFolderId.value !== UNCATEGORIZED_FOLDER_ID
+      ? selectedFolderId.value
+      : null;
+
   const bookmark = await addBookmark({
     title: values.title,
     url: values.url,
@@ -94,6 +104,7 @@ const onSubmit = handleSubmit(async (values) => {
       .split(",")
       .map((tag: string) => tag.trim())
       .filter(Boolean),
+    folder_id: folderId,
   });
   loading.value = false;
 

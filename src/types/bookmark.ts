@@ -10,6 +10,7 @@ export type Bookmark = {
   is_archived: boolean;
   user_id: string;
   is_pinned: boolean;
+  folder_id?: string | null;
 };
 
 export type AddBookmarkPayload = {
@@ -17,6 +18,7 @@ export type AddBookmarkPayload = {
   url: string;
   description?: string;
   tags: string[];
+  folder_id?: string | null;
 };
 
 export type UpdateBookmarkPayload = Partial<

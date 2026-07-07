@@ -5,10 +5,12 @@ import Header from "@/components/Header.vue";
 import SideBar from "@/components/SideBar.vue";
 import BookmarkHeader from "@/components/BookmarkHeader.vue";
 import { useBookmarkTags } from "@/composables/useBookmarkTags";
+import { useBookmarkFolders } from "@/composables/useBookmarkFolders";
 
 const route = useRoute();
 const sidebarOpen = ref(false);
 const { clearTags } = useBookmarkTags();
+const { clearFolder } = useBookmarkFolders();
 
 function closeSidebar() {
   sidebarOpen.value = false;
@@ -23,6 +25,7 @@ watch(
   () => {
     closeSidebar();
     clearTags();
+    clearFolder();
   },
 );
 </script>
