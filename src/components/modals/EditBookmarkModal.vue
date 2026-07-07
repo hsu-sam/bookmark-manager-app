@@ -4,9 +4,10 @@ import Input from "@/components/ui/Input.vue";
 import Modal from "../ui/Modal.vue";
 import Textarea from "@/components/ui/Textarea.vue";
 import Button from "../ui/Button.vue";
-import { useBookmarks } from "@/composables/useBookmark.ts";
+import { useBookmarks } from "@/services/useBookmark.ts";
 import type { Bookmark } from "@/types/bookmark.ts";
 import { useToast } from "@/composables/useToast";
+import { isValidUrl } from "@/utils/url";
 
 const isOpen = defineModel<boolean>();
 const toast = useToast();
@@ -19,7 +20,7 @@ const emit = defineEmits<{
   updated: [];
 }>();
 
-const { updateBookmark } = useBookmarks();
+const { updateBookmark, findDuplicateBookmark } = useBookmarks();
 
 const form = ref({
   title: "",
@@ -27,6 +28,9 @@ const form = ref({
   url: "",
   tags: "",
 });
+
+const duplicateBookmark = ref<Bookmark | null>(null);
+let urlDebounceTimer: ReturnType<typeof setTimeout> | null = null;
 
 watch(
   () => props.bookmark,
@@ -39,12 +43,46 @@ watch(
       url: b.url,
       tags: b.tags?.join(", ") ?? "",
     };
+    duplicateBookmark.value = null;
   },
   { immediate: true },
 );
 
+watch(isOpen, (open) => {
+  if (!open) {
+    duplicateBookmark.value = null;
+  }
+});
+
+function scheduleDuplicateCheck(nextUrl: string) {
+  if (urlDebounceTimer) clearTimeout(urlDebounceTimer);
+
+  urlDebounceTimer = setTimeout(() => {
+    const trimmed = nextUrl.trim();
+
+    if (!trimmed || !isValidUrl(trimmed)) {
+      duplicateBookmark.value = null;
+      return;
+    }
+
+    duplicateBookmark.value = findDuplicateBookmark(trimmed, props.bookmark.id);
+  }, 300);
+}
+
+watch(
+  () => form.value.url,
+  (nextUrl) => {
+    scheduleDuplicateCheck(nextUrl);
+  },
+);
+
 const handleUpdate = async () => {
   if (!props.bookmark) return;
+
+  if (findDuplicateBookmark(form.value.url, props.bookmark.id)) {
+    toast.error("This bookmark URL already exists.");
+    return;
+  }
 
   const payload = {
     title: form.value.title,
@@ -58,7 +96,10 @@ const handleUpdate = async () => {
 
   const result = await updateBookmark(props.bookmark.id, payload);
 
-  if (!result) return;
+  if (!result) {
+    toast.error("Failed to update bookmark.");
+    return;
+  }
 
   isOpen.value = false;
   emit("updated");
@@ -107,6 +148,14 @@ const handleCloseModal = () => {
           class="w-full"
         />
 
+        <div
+          v-if="duplicateBookmark"
+          class="rounded-lg border border-amber-500/60 bg-amber-50 px-150 py-125 text-preset-4 text-amber-900 dark:border-amber-500/40 dark:bg-amber-950/40 dark:text-amber-100"
+        >
+          This URL already exists as
+          <span class="font-semibold">"{{ duplicateBookmark.title }}"</span>.
+        </div>
+
         <Input
           v-model="form.tags"
           name="tags"
@@ -120,7 +169,9 @@ const handleCloseModal = () => {
             Cancel
           </Button>
 
-          <Button type="submit"> Save Bookmark </Button>
+          <Button type="submit" :disabled="!!duplicateBookmark">
+            Save Bookmark
+          </Button>
         </div>
       </form>
     </template>

@@ -1,6 +1,7 @@
 <!-- Sidebar.vue -->
 <script setup lang="ts">
 import Tags from "./ui/Tags.vue";
+import SidebarSection from "./ui/SidebarSection.vue";
 import { Icon } from "@iconify/vue";
 import Button from "./ui/Button.vue";
 import ThemeLogo from "./ThemeLogo.vue";
@@ -69,46 +70,61 @@ const isRouteActive = (routeName: string) => {
       props.isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
     ]"
   >
-      <div class="relative shrink-0 pt-250 px-250 pb-125">
-        <!-- Close button: tablet/mobile only -->
-        <Button
-          variant="secondary"
-          size="none"
-          class="absolute top-3 right-200 border-none lg:hidden"
+    <div class="relative shrink-0 pt-250 px-250 pb-125">
+      <!-- Close button: tablet/mobile only -->
+      <Button
+        variant="secondary"
+        size="none"
+        class="absolute top-3 right-200 border-none lg:hidden"
+        @click="closeSidebar"
+      >
+        <Icon icon="local:icon-close" class="w-5 h-5" />
+      </Button>
+
+      <ThemeLogo />
+    </div>
+
+    <div
+      class="flex min-h-0 flex-1 flex-col gap-200 overflow-y-auto pt-0 pb-250 px-200"
+    >
+      <div class="flex flex-col gap-100">
+        <p
+          class="px-150 pt-150 pb-050 text-preset-5 uppercase text-neutral-800 dark:text-neutral-dark-100"
+        >
+          <strong>VIEWS</strong>
+        </p>
+
+        <router-link
+          v-for="section in sections"
+          :key="section.name"
+          :to="{ name: section.name }"
+          :class="{
+            'active group': isRouteActive(section.name),
+          }"
           @click="closeSidebar"
         >
-          <Icon icon="local:icon-close" class="w-5 h-5" />
-        </Button>
-
-        <ThemeLogo />
-      </div>
-
-      <div
-        class="flex min-h-0 flex-1 flex-col gap-200 overflow-y-auto pt-0 pb-250 px-200"
-      >
-        <div>
-          <router-link
-            v-for="section in sections"
-            :key="section.name"
-            :to="{ name: section.name.toLowerCase() }"
-            :class="{
-              'active group': isRouteActive(section.name),
-            }"
-            @click="closeSidebar"
+          <div
+            class="flex items-center gap-100 py-100 px-150 rounded-8 mb-0.5 text-neutral-800 hover:bg-neutral-100 transition-colors group-[.active]:bg-neutral-100 group-[.active]:text-neutral-900 dark:text-neutral-dark-100 dark:hover:bg-neutral-dark-600 dark:group-[.active]:bg-neutral-dark-600 dark:group-[.active]:text-neutral-dark-0"
           >
-            <div
-              class="flex items-center gap-100 py-100 px-150 rounded-8 mb-0.5 text-neutral-800 hover:bg-neutral-100 transition-colors group-[.active]:bg-neutral-100 group-[.active]:text-neutral-900 dark:text-neutral-dark-100 dark:hover:bg-neutral-dark-600 dark:group-[.active]:bg-neutral-dark-600 dark:group-[.active]:text-neutral-dark-0"
-            >
-              <Icon :icon="section.icon" class="w-5 h-5" />
-              <span class="text-preset-3 font-semibold">
-                {{ section.label }}
-              </span>
-            </div>
-          </router-link>
-        </div>
-        <Tags @select="closeSidebar" />
+            <Icon :icon="section.icon" class="w-5 h-5" />
+            <span class="text-preset-3 font-semibold">
+              {{ section.label }}
+            </span>
+          </div>
+        </router-link>
       </div>
+
+      <SidebarSection title="Folders" :default-open="false">
+        <p
+          class="px-150 text-preset-4 text-neutral-500 dark:text-neutral-dark-100"
+        >
+          No folders yet
+        </p>
+      </SidebarSection>
+
+      <Tags @select="closeSidebar" />
     </div>
+  </div>
 </template>
 
 <style scoped>

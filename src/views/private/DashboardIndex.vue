@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted } from "vue";
 import Card from "@/components/Card.vue";
-import { useBookmarks } from "@/composables/useBookmark.ts";
+import { useBookmarks } from "@/services/useBookmark";
 import { useBookmarkSort } from "@/composables/useBookmarkSort";
 import { useBookmarkSearch } from "@/composables/useBookmarkSearch";
 import { useBookmarkTags } from "@/composables/useBookmarkTags";

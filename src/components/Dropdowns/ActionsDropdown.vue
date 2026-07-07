@@ -5,7 +5,7 @@ import { Icon } from "@iconify/vue";
 import Dropdown from "../ui/Dropdown.vue";
 import type { Bookmark } from "@/types/bookmark.ts";
 import { useToast } from "@/composables/useToast.ts";
-import { useBookmarks } from "@/composables/useBookmark.ts";
+import { useBookmarks } from "@/services/useBookmark.ts";
 
 const toast = useToast();
 const { recordVisit } = useBookmarks();

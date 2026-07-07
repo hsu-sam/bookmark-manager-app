@@ -1,14 +1,34 @@
 import { ref } from "vue";
 import { supabase } from "@/utils/supabase";
+import { normalizeUrl } from "@/utils/url";
 import type {
   Bookmark,
   AddBookmarkPayload,
   UpdateBookmarkPayload,
 } from "@/types/bookmark";
 
+const DUPLICATE_URL_MESSAGE = "This URL already exists in your bookmarks.";
+
 const bookmarks = ref<Bookmark[]>([]);
 const loading = ref(false);
 const error = ref<string | null>(null);
+
+function findDuplicateBookmark(
+  url: string,
+  excludeId?: string,
+): Bookmark | null {
+  const normalized = normalizeUrl(url);
+  if (!normalized) return null;
+
+  return (
+    bookmarks.value.find(
+      (bookmark) =>
+        bookmark.id !== excludeId &&
+        !bookmark.is_archived &&
+        normalizeUrl(bookmark.url) === normalized,
+    ) ?? null
+  );
+}
 
 export function useBookmarks() {
   const fetchBookmarks = async () => {
@@ -34,6 +54,12 @@ export function useBookmarks() {
     loading.value = true;
     error.value = null;
 
+    if (findDuplicateBookmark(payload.url)) {
+      error.value = DUPLICATE_URL_MESSAGE;
+      loading.value = false;
+      return null;
+    }
+
     const { data, error: err } = await supabase
       .from("bookmarks")
       .insert([payload])
@@ -43,7 +69,8 @@ export function useBookmarks() {
     loading.value = false;
 
     if (err) {
-      error.value = err.message;
+      error.value =
+        err.code === "23505" ? DUPLICATE_URL_MESSAGE : err.message;
       return null;
     }
 
@@ -57,6 +84,12 @@ export function useBookmarks() {
     loading.value = true;
     error.value = null;
 
+    if (payload.url && findDuplicateBookmark(payload.url, id)) {
+      error.value = DUPLICATE_URL_MESSAGE;
+      loading.value = false;
+      return null;
+    }
+
     const { data, error: err } = await supabase
       .from("bookmarks")
       .update(payload)
@@ -65,7 +98,8 @@ export function useBookmarks() {
       .single();
 
     if (err) {
-      error.value = err.message;
+      error.value =
+        err.code === "23505" ? DUPLICATE_URL_MESSAGE : err.message;
       loading.value = false;
       return null;
     }
@@ -146,6 +180,7 @@ export function useBookmarks() {
     loading,
     error,
     fetchBookmarks,
+    findDuplicateBookmark,
     addBookmark,
     updateBookmark,
     togglePin,

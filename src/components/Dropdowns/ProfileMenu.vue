@@ -4,7 +4,7 @@ import { useRouter } from "vue-router";
 import { Icon } from "@iconify/vue";
 import Dropdown from "../ui/Dropdown.vue";
 import AvatarPickerModal from "../modals/AvatarPickerModal.vue";
-import { useAuth } from "@/composables/useAuth";
+import { useAuth } from "@/services/useAuth.ts";
 import { useTheme } from "@/composables/useTheme";
 
 const router = useRouter();

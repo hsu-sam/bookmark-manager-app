@@ -2,7 +2,8 @@
 import { computed } from "vue";
 import { Icon } from "@iconify/vue";
 import { useRoute } from "vue-router";
-import { useBookmarks } from "@/composables/useBookmark";
+import SidebarSection from "./SidebarSection.vue";
+import { useBookmarks } from "@/services/useBookmark";
 import { useBookmarkTags } from "@/composables/useBookmarkTags";
 
 const emit = defineEmits<{
@@ -43,23 +44,17 @@ function handleReset() {
 </script>
 
 <template>
-  <div class="flex flex-col gap-100">
-    <div class="flex items-center justify-between">
-      <p
-        class="px-150 pb-050 text-preset-5 font-bold uppercase text-neutral-800 dark:text-neutral-dark-100"
-      >
-        Tags
-      </p>
-
+  <SidebarSection title="Tags">
+    <template #actions>
       <button
         v-if="selectedTags.length"
         type="button"
-        class="px-150 text-preset-5 font-semibold text-neutral-800 hover:text-neutral-900 dark:text-neutral-dark-100 dark:hover:text-neutral-dark-0"
-        @click="handleReset"
+        class="px-100 text-preset-5 font-semibold text-neutral-800 hover:text-neutral-900 dark:text-neutral-dark-100 dark:hover:text-neutral-dark-0"
+        @click.stop="handleReset"
       >
         Reset
       </button>
-    </div>
+    </template>
 
     <div v-if="tagsWithCounts.length" class="flex flex-col gap-050">
       <button
@@ -104,5 +99,5 @@ function handleReset() {
     >
       No tags yet
     </p>
-  </div>
+  </SidebarSection>
 </template>

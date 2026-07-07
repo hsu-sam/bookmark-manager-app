@@ -5,7 +5,7 @@ import {
 } from "vue-router";
 import { userRoutes } from "./private.ts";
 import { publicRoutes } from "./public.ts";
-import { useAuth } from "@/composables/useAuth";
+import { useAuth } from "@/services/useAuth.ts";
 
 declare module "vue-router" {
   interface RouteMeta {
@@ -56,10 +56,7 @@ router.beforeEach(async (to) => {
     await initAuth();
   }
 
-  if (
-    isPasswordRecovery.value &&
-    to.name !== "auth.reset-password"
-  ) {
+  if (isPasswordRecovery.value && to.name !== "auth.reset-password") {
     return { name: "auth.reset-password" };
   }
 

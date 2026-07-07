@@ -4,7 +4,7 @@ import { useForm } from "vee-validate";
 import Input from "@/components/ui/Input.vue";
 import Button from "@/components/ui/Button.vue";
 import ThemeLogo from "@/components/ThemeLogo.vue";
-import { useAuth } from "@/composables/useAuth";
+import { useAuth } from "@/services/useAuth";
 import { useToast } from "@/composables/useToast";
 import { emailRule } from "@/schemas/password.schemas";
 

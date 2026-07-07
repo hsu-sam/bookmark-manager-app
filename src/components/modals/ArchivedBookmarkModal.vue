@@ -3,7 +3,7 @@ import { ref } from "vue";
 import Modal from "../ui/Modal.vue";
 import Button from "../ui/Button.vue";
 import type { Bookmark } from "@/types/bookmark";
-import { useBookmarks } from "@/composables/useBookmark";
+import { useBookmarks } from "@/services/useBookmark.ts";
 import { useToast } from "@/composables/useToast";
 
 const isOpen = defineModel<boolean>();

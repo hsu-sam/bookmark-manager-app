@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted } from "vue";
 import Card from "@/components/Card.vue";
-import { useBookmarks } from "@/composables/useBookmark.ts";
+import { useBookmarks } from "@/services/useBookmark";
 import { useBookmarkSort } from "@/composables/useBookmarkSort";
 import { useBookmarkSearch } from "@/composables/useBookmarkSearch";
 import { useBookmarkTags } from "@/composables/useBookmarkTags";
@@ -45,10 +45,7 @@ onMounted(() => {
       <CardSkeleton v-for="n in 6" :key="n" />
     </div>
 
-    <div
-      v-else-if="archivedBookmarks.length"
-      class="flex flex-1 flex-col"
-    >
+    <div v-else-if="archivedBookmarks.length" class="flex flex-1 flex-col">
       <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card
           v-for="bookmark in paginatedItems"

@@ -7,7 +7,7 @@ import {
   generateAvatars,
   type DicebearAvatar,
 } from "@/composables/useDicebearAvatar";
-import { useUpdateAvatar } from "@/composables/useUpdateAvatar";
+import { useUpdateAvatar } from "@/services/useUpdateAvatar";
 import { useToast } from "@/composables/useToast";
 
 const AVATAR_COUNT = 24;
