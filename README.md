@@ -42,7 +42,7 @@ Users should be able to:
 ### Links
 
 - Solution URL: [https://github.com/hsu-sam/bookmark-manager-app](https://github.com/hsu-sam/bookmark-manager-app)
-- Live Site URL: [Add live site URL here](https://bookmarkk-manager-app.vercel.app)
+- Live Site URL: [Bookmark Manager App](https://bookmarkk-manager-app.vercel.app)
 
 ## My process
 
