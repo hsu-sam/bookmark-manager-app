@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted } from "vue";
+import { motion } from "motion-v";
 import Card from "@/components/Card.vue";
 import { useBookmarks } from "@/services/useBookmark";
 import { useFolders } from "@/services/useFolder";
@@ -11,6 +12,7 @@ import EmptyBookmark from "@/components/illustrations/EmptyBookmark.vue";
 import CardSkeleton from "@/components/Skeletons/CardSkeleton.vue";
 import Pagination from "@/components/ui/Pagination.vue";
 import { usePagination } from "@/composables/usePagination";
+import { useCardStaggerMotion } from "@/composables/useCardStaggerMotion";
 
 const { bookmarks, loading, fetchBookmarks } = useBookmarks();
 const { fetchFolders } = useFolders();
@@ -18,6 +20,7 @@ const { sortBookmarks } = useBookmarkSort();
 const { searchQuery, filterBookmarks } = useBookmarkSearch();
 const { selectedTags, filterBookmarksByTags } = useBookmarkTags();
 const { filterBookmarksByFolder, selectedFolderName } = useBookmarkFolders();
+const { cardInitial, cardAnimate, cardTransition } = useCardStaggerMotion();
 
 const baseArchivedBookmarks = computed(() =>
   bookmarks.value.filter((bookmark) => bookmark.is_archived),
@@ -58,12 +61,16 @@ onMounted(() => {
 
     <div v-else-if="archivedBookmarks.length" class="flex flex-1 flex-col gap-400">
       <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <Card
-          v-for="bookmark in paginatedItems"
+        <motion.div
+          v-for="(bookmark, index) in paginatedItems"
           :key="bookmark.id"
-          :bookmark="bookmark"
-          archived
-        />
+          class="h-full"
+          :initial="cardInitial"
+          :animate="cardAnimate"
+          :transition="cardTransition(index)"
+        >
+          <Card :bookmark="bookmark" archived />
+        </motion.div>
       </div>
 
       <Pagination

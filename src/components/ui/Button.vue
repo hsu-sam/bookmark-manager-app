@@ -46,7 +46,7 @@ const sizes: Record<ButtonSize, string> = {
     :type
     :disabled="disabled || loading"
     :class="[variants[variant], sizes[size]]"
-    class="disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none active:scale-[.98]"
+    class="transition-transform duration-[160ms] ease-[cubic-bezier(0.23,1,0.32,1)] disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none active:scale-[0.97]"
   >
     <Icon icon="mdi-light:loading" class="animate-spin" v-if="loading" />
     <Icon v-else-if="icon" :icon />

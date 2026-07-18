@@ -100,8 +100,14 @@
   --radius-400: 32px;
   --radius-500: 40px;
 
-  --animate-overlay-show: overlayShow 150ms ease-out;
-  --animate-content-show: contentShow 200ms ease-out;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+
+  --animate-overlay-show: overlayShow 150ms var(--ease-out);
+  --animate-overlay-hide: overlayHide 120ms var(--ease-out);
+  --animate-content-show: contentShow 200ms var(--ease-out);
+  --animate-content-hide: contentHide 150ms var(--ease-out);
+  --animate-dropdown-show: dropdownShow 180ms var(--ease-out);
+  --animate-dropdown-hide: dropdownHide 150ms var(--ease-out);
 
   @keyframes overlayShow {
     from {
@@ -109,6 +115,15 @@
     }
     to {
       opacity: 1;
+    }
+  }
+
+  @keyframes overlayHide {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
     }
   }
 
@@ -121,6 +136,49 @@
       opacity: 1;
       transform: translate(-50%, -50%) scale(1);
     }
+  }
+
+  @keyframes contentHide {
+    from {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: translate(-50%, -48%) scale(0.96);
+    }
+  }
+
+  @keyframes dropdownShow {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes dropdownHide {
+    from {
+      opacity: 1;
+      transform: scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
 

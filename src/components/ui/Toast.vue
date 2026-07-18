@@ -30,7 +30,7 @@ defineEmits<{
     </p>
     <button
       type="button"
-      class="shrink-0 cursor-pointer text-secondary-gray dark:text-neutral-dark-100 dark:hover:text-neutral-dark-0"
+      class="shrink-0 cursor-pointer transition-transform duration-[160ms] ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.97] text-secondary-gray dark:text-neutral-dark-100 dark:hover:text-neutral-dark-0"
       aria-label="Dismiss"
       @click="$emit('close')"
     >

@@ -38,7 +38,7 @@ withDefaults(defineProps<DropdownProps>(), {
       <DropdownMenuContent
         :align
         :side-offset="8"
-        class="z-50 min-w-[180px] rounded-xl border border-neutral-200 bg-white shadow-lg p-1 outline-none dark:border-neutral-dark-500 dark:bg-neutral-dark-800 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95"
+        class="z-50 min-w-[180px] origin-[var(--radix-dropdown-menu-content-transform-origin)] rounded-xl border border-neutral-200 bg-white shadow-lg p-1 outline-none dark:border-neutral-dark-500 dark:bg-neutral-dark-800 data-[state=open]:animate-dropdownShow data-[state=closed]:animate-dropdownHide"
         :class="contentClass"
       >
         <!-- Custom content slot (for profile menu etc.) -->
