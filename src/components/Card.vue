@@ -81,7 +81,7 @@ async function handleTogglePin(id: string) {
 
 <template>
   <div
-    class="flex h-full w-full flex-col overflow-hidden rounded-12 bg-neutral-0 dark:bg-neutral-dark-800"
+    class="flex h-full w-full flex-col overflow-hidden rounded-12 bg-neutral-0 dark:bg-neutral-dark-800 min-w-84.5 min-h-68"
   >
     <div class="flex flex-1 flex-col gap-200 p-200">
       <div class="flex w-full min-w-0 items-center justify-between gap-150">
