@@ -36,10 +36,15 @@ const isDeleteModalOpen = ref(false);
 const isMoveFolderModalOpen = ref(false);
 const { togglePin } = useBookmarks();
 
-const getFaviconUrl = (url: string) => {
+const faviconFailed = ref(false);
+
+const getFaviconUrl = (bookmark: Bookmark) => {
+  if (bookmark.favicon_url) return bookmark.favicon_url;
+
   try {
-    const domain = new URL(url.startsWith("http") ? url : `https://${url}`)
-      .hostname;
+    const domain = new URL(
+      bookmark.url.startsWith("http") ? bookmark.url : `https://${bookmark.url}`,
+    ).hostname;
     return `https://www.google.com/s2/favicons?sz=64&domain=${domain}`;
   } catch (e) {
     return "";
@@ -86,12 +91,21 @@ async function handleTogglePin(id: string) {
       <div class="flex w-full min-w-0 items-center justify-between gap-150">
         <div class="flex min-w-0 flex-1 items-center gap-150">
           <div
-            class="shrink-0 rounded-12 border border-neutral-300 bg-neutral-0 dark:border-neutral-dark-500 dark:bg-neutral-dark-800"
+            class="flex h-11 w-11 shrink-0 items-center justify-center rounded-12 border border-neutral-300 bg-neutral-0 dark:border-neutral-dark-500 dark:bg-neutral-dark-800"
           >
             <img
-              :src="getFaviconUrl(bookmark.url)"
+              v-if="!faviconFailed"
+              :src="getFaviconUrl(bookmark)"
               :alt="`${bookmark.title} Favicon`"
               class="h-11 w-11 rounded-8"
+              loading="lazy"
+              decoding="async"
+              @error="faviconFailed = true"
+            />
+            <Icon
+              v-else
+              icon="lucide:globe"
+              class="size-5 text-neutral-500 dark:text-neutral-dark-100"
             />
           </div>
           <div class="flex min-w-0 flex-1 flex-col items-start gap-050">

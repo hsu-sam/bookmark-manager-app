@@ -22,6 +22,7 @@ const { selectedFolderId } = useBookmarkFolders();
 const isOpen = defineModel<boolean>();
 const loading = ref(false);
 const duplicateBookmark = ref<Bookmark | null>(null);
+const fetchedFaviconUrl = ref<string | null>(null);
 
 let urlDebounceTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -41,6 +42,7 @@ const description = useFieldValue<string>("description");
 watch(isOpen, (open) => {
   if (!open) {
     duplicateBookmark.value = null;
+    fetchedFaviconUrl.value = null;
     resetForm();
   }
 });
@@ -50,17 +52,20 @@ function scheduleUrlProcessing(nextUrl: string) {
 
   urlDebounceTimer = setTimeout(async () => {
     const trimmed = nextUrl.trim();
+    fetchedFaviconUrl.value = null;
 
     if (!trimmed || !isValidUrl(trimmed)) {
       duplicateBookmark.value = null;
       return;
     }
 
-    duplicateBookmark.value = findDuplicateBookmark(trimmed);
+    duplicateBookmark.value = await findDuplicateBookmark(trimmed);
     if (duplicateBookmark.value) return;
 
     const metadata = await fetchMetadata(trimmed);
     if (!metadata) return;
+
+    fetchedFaviconUrl.value = metadata.faviconUrl;
 
     if (!title.value?.trim() && metadata.title) {
       setFieldValue("title", metadata.title);
@@ -83,7 +88,7 @@ const handleCloseModal = () => {
 };
 
 const onSubmit = handleSubmit(async (values) => {
-  if (findDuplicateBookmark(values.url)) {
+  if (await findDuplicateBookmark(values.url)) {
     toast.error("This bookmark URL already exists.");
     return;
   }
@@ -104,6 +109,7 @@ const onSubmit = handleSubmit(async (values) => {
       .map((tag: string) => tag.trim())
       .filter(Boolean),
     folder_id: folderId,
+    favicon_url: fetchedFaviconUrl.value,
   });
   loading.value = false;
 

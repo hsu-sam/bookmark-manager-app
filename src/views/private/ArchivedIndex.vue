@@ -2,37 +2,24 @@
 import { computed, onMounted } from "vue";
 import { motion } from "motion-v";
 import Card from "@/components/Card.vue";
-import { useBookmarks } from "@/services/useBookmark";
 import { useFolders } from "@/services/useFolder";
-import { useBookmarkSort } from "@/composables/useBookmarkSort";
 import { useBookmarkSearch } from "@/composables/useBookmarkSearch";
 import { useBookmarkTags } from "@/composables/useBookmarkTags";
 import { useBookmarkFolders } from "@/composables/useBookmarkFolders";
 import EmptyBookmark from "@/components/illustrations/EmptyBookmark.vue";
 import CardSkeleton from "@/components/Skeletons/CardSkeleton.vue";
 import Pagination from "@/components/ui/Pagination.vue";
-import { usePagination } from "@/composables/usePagination";
+import { useBookmarkList } from "@/composables/useBookmarkList";
 import { useCardStaggerMotion } from "@/composables/useCardStaggerMotion";
 
-const { bookmarks, loading, fetchBookmarks } = useBookmarks();
 const { fetchFolders } = useFolders();
-const { sortBookmarks } = useBookmarkSort();
-const { searchQuery, filterBookmarks } = useBookmarkSearch();
-const { selectedTags, filterBookmarksByTags } = useBookmarkTags();
-const { filterBookmarksByFolder, selectedFolderName } = useBookmarkFolders();
+const { searchQuery } = useBookmarkSearch();
+const { selectedTags } = useBookmarkTags();
+const { selectedFolderName } = useBookmarkFolders();
 const { cardInitial, cardAnimate, cardTransition } = useCardStaggerMotion();
 
-const baseArchivedBookmarks = computed(() =>
-  bookmarks.value.filter((bookmark) => bookmark.is_archived),
-);
-
-const archivedBookmarks = computed(() =>
-  sortBookmarks(
-    filterBookmarksByTags(
-      filterBookmarksByFolder(filterBookmarks(baseArchivedBookmarks.value)),
-    ),
-  ),
-);
+const { bookmarks, loading, currentPage, totalPages, totalItems, pageSize } =
+  useBookmarkList(true);
 
 const hasActiveFilters = computed(
   () =>
@@ -41,11 +28,7 @@ const hasActiveFilters = computed(
     Boolean(selectedFolderName.value),
 );
 
-const { currentPage, totalPages, paginatedItems, pageSize } =
-  usePagination(archivedBookmarks);
-
 onMounted(() => {
-  fetchBookmarks();
   fetchFolders();
 });
 </script>
@@ -53,16 +36,16 @@ onMounted(() => {
 <template>
   <div class="flex min-h-full flex-1 flex-col">
     <div
-      v-if="loading && !baseArchivedBookmarks.length"
+      v-if="loading && !bookmarks.length"
       class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3"
     >
       <CardSkeleton v-for="n in 6" :key="n" />
     </div>
 
-    <div v-else-if="archivedBookmarks.length" class="flex flex-1 flex-col gap-400">
+    <div v-else-if="bookmarks.length" class="flex flex-1 flex-col gap-400">
       <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         <motion.div
-          v-for="(bookmark, index) in paginatedItems"
+          v-for="(bookmark, index) in bookmarks"
           :key="bookmark.id"
           class="h-full"
           :initial="cardInitial"
@@ -78,13 +61,13 @@ onMounted(() => {
         v-model="currentPage"
         class="mt-auto shrink-0"
         :total-pages="totalPages"
-        :total-items="archivedBookmarks.length"
+        :total-items="totalItems"
         :page-size="pageSize"
       />
     </div>
 
     <p
-      v-else-if="hasActiveFilters && baseArchivedBookmarks.length"
+      v-else-if="hasActiveFilters"
       class="text-p4 text-neutral-600"
     >
       <template v-if="searchQuery.trim()">

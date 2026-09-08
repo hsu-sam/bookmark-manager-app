@@ -1,60 +1,114 @@
 import { ref } from "vue";
 import { supabase } from "@/utils/supabase";
-import { normalizeUrl } from "@/utils/url";
+import { UNCATEGORIZED_FOLDER_ID } from "@/types/folder";
 import type {
   Bookmark,
   AddBookmarkPayload,
   UpdateBookmarkPayload,
 } from "@/types/bookmark";
+import type { BookmarkSortOption } from "@/composables/useBookmarkSort";
 
 const DUPLICATE_URL_MESSAGE = "This URL already exists in your bookmarks.";
 
-const bookmarks = ref<Bookmark[]>([]);
 const loading = ref(false);
 const error = ref<string | null>(null);
 
-function findDuplicateBookmark(
+// Bumped after any mutation so list views (which each hold only their own
+// current page) know to refetch. See useBookmarkList.ts.
+export const bookmarksVersion = ref(0);
+export function bumpBookmarksVersion() {
+  bookmarksVersion.value += 1;
+}
+const bumpVersion = bumpBookmarksVersion;
+
+export interface ListBookmarksParams {
+  archived: boolean;
+  page: number;
+  pageSize: number;
+  search: string;
+  folderId: string | null;
+  tags: string[];
+  sort: BookmarkSortOption;
+}
+
+export interface ListBookmarksResult {
+  data: Bookmark[];
+  count: number;
+  error: string | null;
+}
+
+async function listBookmarks(
+  params: ListBookmarksParams,
+): Promise<ListBookmarksResult> {
+  let query = supabase
+    .from("bookmarks")
+    .select("*", { count: "exact" })
+    .eq("is_archived", params.archived);
+
+  if (params.folderId === UNCATEGORIZED_FOLDER_ID) {
+    query = query.is("folder_id", null);
+  } else if (params.folderId) {
+    query = query.eq("folder_id", params.folderId);
+  }
+
+  if (params.tags.length) {
+    query = query.contains("tags", params.tags);
+  }
+
+  const search = params.search.trim();
+  if (search) {
+    // PostgREST's `.or()` treats "," as a filter separator and reserves a
+    // handful of other characters; wrapping the value in double quotes
+    // escapes them, but the value itself can't contain a literal comma.
+    const safe = `"%${search.replace(/[,"]/g, " ")}%"`;
+    query = query.or(
+      `title.ilike.${safe},url.ilike.${safe},description.ilike.${safe}`,
+    );
+  }
+
+  query = query.order("is_pinned", { ascending: false });
+  if (params.sort === "most-visited") {
+    query = query.order("visit_count", { ascending: false });
+  } else if (params.sort === "recently-visited") {
+    query = query.order("last_visited", { ascending: false, nullsFirst: false });
+  } else {
+    query = query.order("created_at", { ascending: false });
+  }
+
+  const start = (params.page - 1) * params.pageSize;
+  const { data, count, error: err } = await query.range(
+    start,
+    start + params.pageSize - 1,
+  );
+
+  return {
+    data: err ? [] : ((data ?? []) as Bookmark[]),
+    count: err ? 0 : (count ?? 0),
+    error: err?.message ?? null,
+  };
+}
+
+async function findDuplicateBookmark(
   url: string,
   excludeId?: string,
-): Bookmark | null {
-  const normalized = normalizeUrl(url);
-  if (!normalized) return null;
+): Promise<Bookmark | null> {
+  if (!url.trim()) return null;
 
-  return (
-    bookmarks.value.find(
-      (bookmark) =>
-        bookmark.id !== excludeId &&
-        !bookmark.is_archived &&
-        normalizeUrl(bookmark.url) === normalized,
-    ) ?? null
-  );
+  const { data, error: err } = await supabase.rpc("find_duplicate_bookmark", {
+    p_url: url,
+    p_exclude_id: excludeId ?? null,
+  });
+
+  if (err) return null;
+  return (data as Bookmark | null) ?? null;
 }
 
 export function useBookmarks() {
-  const fetchBookmarks = async () => {
-    loading.value = true;
-    error.value = null;
-
-    const { data, error: err } = await supabase
-      .from("bookmarks")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    if (err) {
-      error.value = err.message;
-      bookmarks.value = [];
-    } else {
-      bookmarks.value = (data ?? []) as Bookmark[];
-    }
-
-    loading.value = false;
-  };
-
   const addBookmark = async (payload: AddBookmarkPayload) => {
     loading.value = true;
     error.value = null;
 
-    if (findDuplicateBookmark(payload.url)) {
+    if (await findDuplicateBookmark(payload.url)) {
       error.value = DUPLICATE_URL_MESSAGE;
       loading.value = false;
       return null;
@@ -74,17 +128,15 @@ export function useBookmarks() {
       return null;
     }
 
-    const newBookmark = data as Bookmark;
-    bookmarks.value.unshift(newBookmark);
-
-    return newBookmark;
+    bumpVersion();
+    return data as Bookmark;
   };
 
   const updateBookmark = async (id: string, payload: UpdateBookmarkPayload) => {
     loading.value = true;
     error.value = null;
 
-    if (payload.url && findDuplicateBookmark(payload.url, id)) {
+    if (payload.url && (await findDuplicateBookmark(payload.url, id))) {
       error.value = DUPLICATE_URL_MESSAGE;
       loading.value = false;
       return null;
@@ -97,22 +149,16 @@ export function useBookmarks() {
       .select("*")
       .single();
 
+    loading.value = false;
+
     if (err) {
       error.value =
         err.code === "23505" ? DUPLICATE_URL_MESSAGE : err.message;
-      loading.value = false;
       return null;
     }
 
-    const updatedBookmark = data as Bookmark;
-    const index = bookmarks.value.findIndex((bookmark) => bookmark.id === id);
-    if (index !== -1) {
-      bookmarks.value[index] = updatedBookmark;
-    }
-
-    loading.value = false;
-
-    return updatedBookmark;
+    bumpVersion();
+    return data as Bookmark;
   };
 
   const togglePin = async (id: string, isPinned: boolean) => {
@@ -143,7 +189,7 @@ export function useBookmarks() {
       return false;
     }
 
-    bookmarks.value = bookmarks.value.filter((bookmark) => bookmark.id !== id);
+    bumpVersion();
     return true;
   };
 
@@ -158,20 +204,14 @@ export function useBookmarks() {
       return null;
     }
 
-    const updatedBookmark = data as Bookmark;
-    const index = bookmarks.value.findIndex((b) => b.id === id);
-    if (index !== -1) {
-      bookmarks.value[index] = updatedBookmark;
-    }
-
-    return updatedBookmark;
+    bumpVersion();
+    return data as Bookmark;
   };
 
   return {
-    bookmarks,
     loading,
     error,
-    fetchBookmarks,
+    listBookmarks,
     findDuplicateBookmark,
     addBookmark,
     updateBookmark,

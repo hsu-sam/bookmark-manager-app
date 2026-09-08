@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { Icon } from "@iconify/vue";
 import { useRoute } from "vue-router";
 import SidebarSection from "./SidebarSection.vue";
@@ -7,7 +7,8 @@ import Dropdown from "./Dropdown.vue";
 import CreateFolderModal from "@/components/modals/CreateFolderModal.vue";
 import EditFolderModal from "@/components/modals/EditFolderModal.vue";
 import DeleteFolderModal from "@/components/modals/DeleteFolderModal.vue";
-import { useBookmarks } from "@/services/useBookmark";
+import { supabase } from "@/utils/supabase";
+import { bookmarksVersion } from "@/services/useBookmark";
 import { useFolders } from "@/services/useFolder";
 import { useBookmarkFolders } from "@/composables/useBookmarkFolders";
 import { UNCATEGORIZED_FOLDER_ID } from "@/types/folder";
@@ -19,7 +20,6 @@ const emit = defineEmits<{
 }>();
 
 const route = useRoute();
-const { bookmarks } = useBookmarks();
 const { folders } = useFolders();
 const {
   selectedFolderId,
@@ -33,27 +33,43 @@ const isEditModalOpen = ref(false);
 const isDeleteModalOpen = ref(false);
 const activeFolder = ref<Folder | null>(null);
 
-const scopedBookmarks = computed(() => {
+const folderCounts = ref(new Map<string, number>());
+const uncategorizedCount = ref(0);
+
+async function fetchFolderCounts() {
   const isArchived = route.name === "user.archived";
-  return bookmarks.value.filter((bookmark) =>
-    isArchived ? bookmark.is_archived : !bookmark.is_archived,
-  );
+  const { data, error } = await supabase.rpc("bookmark_folder_counts", {
+    p_is_archived: isArchived,
+  });
+
+  if (error || !data) return;
+
+  const counts = new Map<string, number>();
+  let uncategorized = 0;
+
+  for (const row of data as { folder_id: string | null; count: number }[]) {
+    if (row.folder_id) {
+      counts.set(row.folder_id, row.count);
+    } else {
+      uncategorized = row.count;
+    }
+  }
+
+  folderCounts.value = counts;
+  uncategorizedCount.value = uncategorized;
+}
+
+watch([() => route.name, bookmarksVersion], fetchFolderCounts, {
+  immediate: true,
 });
 
 const folderRows = computed(() =>
   [...folders.value]
     .map((folder) => ({
       ...folder,
-      count: scopedBookmarks.value.filter(
-        (bookmark) => bookmark.folder_id === folder.id,
-      ).length,
+      count: folderCounts.value.get(folder.id) ?? 0,
     }))
     .sort((a, b) => a.name.localeCompare(b.name)),
-);
-
-const uncategorizedCount = computed(
-  () =>
-    scopedBookmarks.value.filter((bookmark) => !bookmark.folder_id).length,
 );
 
 const hasFolders = computed(

@@ -1,5 +1,4 @@
 import { computed, ref } from "vue";
-import type { Bookmark } from "@/types/bookmark";
 import { UNCATEGORIZED_FOLDER_ID } from "@/types/folder";
 import { useFolders } from "@/services/useFolder";
 
@@ -26,18 +25,6 @@ export function useBookmarkFolders() {
     selectedFolderId.value = null;
   };
 
-  const filterBookmarksByFolder = (bookmarks: Bookmark[]) => {
-    if (!selectedFolderId.value) return bookmarks;
-
-    if (selectedFolderId.value === UNCATEGORIZED_FOLDER_ID) {
-      return bookmarks.filter((bookmark) => !bookmark.folder_id);
-    }
-
-    return bookmarks.filter(
-      (bookmark) => bookmark.folder_id === selectedFolderId.value,
-    );
-  };
-
   return {
     selectedFolderId,
     selectedFolderName,
@@ -45,6 +32,5 @@ export function useBookmarkFolders() {
     folders,
     selectFolder,
     clearFolder,
-    filterBookmarksByFolder,
   };
 }

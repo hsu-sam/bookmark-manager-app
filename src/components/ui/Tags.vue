@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref, watch } from "vue";
 import { Icon } from "@iconify/vue";
 import { useRoute } from "vue-router";
 import SidebarSection from "./SidebarSection.vue";
-import { useBookmarks } from "@/services/useBookmark";
+import { supabase } from "@/utils/supabase";
+import { bookmarksVersion } from "@/services/useBookmark";
 import { useBookmarkTags } from "@/composables/useBookmarkTags";
 
 const emit = defineEmits<{
@@ -11,25 +12,25 @@ const emit = defineEmits<{
 }>();
 
 const route = useRoute();
-const { bookmarks } = useBookmarks();
 const { selectedTags, toggleTag, clearTags } = useBookmarkTags();
 
-const tagsWithCounts = computed(() => {
+const tagsWithCounts = ref<{ name: string; count: number }[]>([]);
+
+async function fetchTagCounts() {
   const isArchived = route.name === "user.archived";
-  const scopedBookmarks = bookmarks.value.filter((bookmark) =>
-    isArchived ? bookmark.is_archived : !bookmark.is_archived,
+  const { data, error } = await supabase.rpc("bookmark_tag_counts", {
+    p_is_archived: isArchived,
+  });
+
+  if (error || !data) return;
+
+  tagsWithCounts.value = (data as { tag: string; count: number }[]).map(
+    (row) => ({ name: row.tag, count: row.count }),
   );
+}
 
-  const counts = new Map<string, number>();
-  for (const bookmark of scopedBookmarks) {
-    for (const tag of bookmark.tags ?? []) {
-      counts.set(tag, (counts.get(tag) ?? 0) + 1);
-    }
-  }
-
-  return [...counts.entries()]
-    .map(([name, count]) => ({ name, count }))
-    .sort((a, b) => a.name.localeCompare(b.name));
+watch([() => route.name, bookmarksVersion], fetchTagCounts, {
+  immediate: true,
 });
 
 function handleTagClick(tag: string) {

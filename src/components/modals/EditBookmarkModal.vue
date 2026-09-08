@@ -57,7 +57,7 @@ watch(isOpen, (open) => {
 function scheduleDuplicateCheck(nextUrl: string) {
   if (urlDebounceTimer) clearTimeout(urlDebounceTimer);
 
-  urlDebounceTimer = setTimeout(() => {
+  urlDebounceTimer = setTimeout(async () => {
     const trimmed = nextUrl.trim();
 
     if (!trimmed || !isValidUrl(trimmed)) {
@@ -65,7 +65,10 @@ function scheduleDuplicateCheck(nextUrl: string) {
       return;
     }
 
-    duplicateBookmark.value = findDuplicateBookmark(trimmed, props.bookmark.id);
+    duplicateBookmark.value = await findDuplicateBookmark(
+      trimmed,
+      props.bookmark.id,
+    );
   }, 300);
 }
 
@@ -79,7 +82,7 @@ watch(
 const handleUpdate = async () => {
   if (!props.bookmark) return;
 
-  if (findDuplicateBookmark(form.value.url, props.bookmark.id)) {
+  if (await findDuplicateBookmark(form.value.url, props.bookmark.id)) {
     toast.error("This bookmark URL already exists.");
     return;
   }

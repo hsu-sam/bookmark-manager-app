@@ -12,6 +12,7 @@ export type Bookmark = {
   user_id: string;
   is_pinned: boolean;
   folder_id?: string | null;
+  favicon_url?: string | null;
 };
 
 export type AddBookmarkPayload = {
@@ -20,6 +21,7 @@ export type AddBookmarkPayload = {
   description?: string;
   tags: string[];
   folder_id?: string | null;
+  favicon_url?: string | null;
 };
 
 export type UpdateBookmarkPayload = Partial<
