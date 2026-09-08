@@ -148,18 +148,10 @@ export function useBookmarks() {
   };
 
   const recordVisit = async (id: string) => {
-    const bookmark = bookmarks.value.find((b) => b.id === id);
-    if (!bookmark) return null;
-
-    const { data, error: err } = await supabase
-      .from("bookmarks")
-      .update({
-        visit_count: bookmark.visit_count + 1,
-        last_visited: new Date().toISOString(),
-      })
-      .eq("id", id)
-      .select("*")
-      .single();
+    const { data, error: err } = await supabase.rpc(
+      "increment_bookmark_visit",
+      { bookmark_id: id },
+    );
 
     if (err) {
       error.value = err.message;

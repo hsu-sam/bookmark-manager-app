@@ -1,6 +1,7 @@
 export type Bookmark = {
   id: string;
   created_at: string;
+  updated_at: string;
   title: string;
   url: string;
   description?: string;

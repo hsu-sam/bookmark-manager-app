@@ -34,23 +34,12 @@ export function useFolders() {
     loading.value = true;
     error.value = null;
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      error.value = "You must be signed in to create a folder.";
-      loading.value = false;
-      return null;
-    }
-
     const { data, error: err } = await supabase
       .from("folders")
       .insert([
         {
           name: payload.name.trim(),
           parent_id: payload.parent_id ?? null,
-          user_id: user.id,
         },
       ])
       .select("*")

@@ -4,6 +4,7 @@ export type Folder = {
   parent_id: string | null;
   name: string;
   created_at: string;
+  updated_at: string;
 };
 
 export type CreateFolderPayload = {
