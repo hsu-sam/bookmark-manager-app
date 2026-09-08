@@ -22,7 +22,7 @@ defineExpose({
       $attrs.class,
     ]"
   >
-    <Icon icon="local:icon-search" size="20" />
+    <Icon icon="local:icon-search" size="20" class="w-5 h-5" />
     <input
       ref="inputRef"
       name="search"
