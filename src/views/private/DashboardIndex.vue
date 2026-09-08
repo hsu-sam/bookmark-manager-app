@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted } from "vue";
-import { motion } from "motion-v";
+
 import Card from "@/components/Card.vue";
 import { useBookmarks } from "@/services/useBookmark";
 import { useFolders } from "@/services/useFolder";
@@ -64,16 +64,13 @@ onMounted(() => {
       class="flex flex-1 flex-col gap-400"
     >
       <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <motion.div
-          v-for="(bookmark, index) in paginatedItems"
+        <div
+          v-for="bookmark in paginatedItems"
           :key="bookmark.id"
           class="h-full"
-          :initial="cardInitial"
-          :animate="cardAnimate"
-          :transition="cardTransition(index)"
         >
           <Card :bookmark="bookmark" />
-        </motion.div>
+        </div>
       </div>
 
       <Pagination
@@ -86,9 +83,9 @@ onMounted(() => {
       />
     </div>
 
-    <p
+    <div
       v-else-if="hasActiveFilters && baseActiveBookmarks.length"
-      class="text-p4 text-neutral-600"
+      class="w-full h-full flex items-center justify-center text-center text-gray-500 dark:text-gray-400 px-200 py-300 sm:px-400 sm:py-400"
     >
       <template v-if="searchQuery.trim()">
         No bookmarks found for "{{ searchQuery.trim() }}".
@@ -99,7 +96,7 @@ onMounted(() => {
       <template v-else-if="selectedFolderName">
         No bookmarks in folder "{{ selectedFolderName }}".
       </template>
-    </p>
+    </div>
 
     <div
       v-else
