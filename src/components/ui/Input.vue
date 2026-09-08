@@ -36,14 +36,19 @@ const reactiveType = ref(props.type);
     >
       <span class="font-semibold">
         {{ label }}
-        <em class="text-teal-700 not-italic dark:text-neutral-dark-300" v-if="required">*</em>
+        <em
+          class="text-teal-700 not-italic dark:text-neutral-dark-300"
+          v-if="required"
+          >*</em
+        >
       </span>
 
       <div
         class="relative flex border rounded-lg py-2.5 px-4 font-medium items-center input-container bg-neutral-0 border-neutral-400 transition-colors focus-within:border-teal-700 dark:bg-neutral-dark-800 dark:border-neutral-dark-500 dark:focus-within:border-neutral-dark-300"
         :class="{
           'text-green-600': isValid,
-          'text-red-600 border-red-600 dark:border-red-600': meta.touched && !meta.valid,
+          'text-red-600 border-red-600 dark:border-red-600':
+            meta.touched && !meta.valid,
         }"
       >
         <input
@@ -67,7 +72,7 @@ const reactiveType = ref(props.type);
             <button
               type="button"
               v-if="type === 'password'"
-              class="cursor-pointer text-neutral-500 dark:text-neutral-dark-100"
+              class="cursor-pointer text-neutral-500 dark:text-neutral-dark-100 p-0.5"
             >
               <Icon
                 v-if="reactiveType === 'password'"
