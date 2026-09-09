@@ -1,0 +1,7 @@
+@import "@/assets/main.css";
+
+/* Tailwind's auto content-detection doesn't reliably reach files under the
+   real src/ tree when they're only pulled in via this build's path alias
+   (e.g. ThemeLogo.vue's dark:hidden/dark:block never generated any CSS).
+   Force it to scan the whole shared source tree explicitly. */
+@source "../../../src";

@@ -65,6 +65,7 @@ async function signOut() {
 
   if (!error) {
     queryClient.clear();
+    initPromise = null;
   }
 
   return { error };
