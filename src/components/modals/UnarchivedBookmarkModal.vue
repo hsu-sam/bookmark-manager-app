@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { ref } from "vue";
 import Modal from "../ui/Modal.vue";
 import Button from "../ui/Button.vue";
 import type { Bookmark } from "@/types/bookmark";
-import { useBookmarks } from "@/services/useBookmark.ts";
+import { useUnarchiveBookmark } from "@/services/useBookmark.ts";
 import { useToast } from "@/composables/useToast";
 
 const isOpen = defineModel<boolean>();
@@ -12,26 +11,21 @@ const props = defineProps<{
   bookmark: Bookmark;
 }>();
 
-const { unarchiveBookmark } = useBookmarks();
+const unarchiveBookmarkMutation = useUnarchiveBookmark();
 const toast = useToast();
-const loading = ref(false);
 
 function handleClose() {
   isOpen.value = false;
 }
 
 async function handleConfirm() {
-  loading.value = true;
-  const result = await unarchiveBookmark(props.bookmark.id);
-  loading.value = false;
-
-  if (!result) {
+  try {
+    await unarchiveBookmarkMutation.mutateAsync(props.bookmark.id);
+    isOpen.value = false;
+    toast.success("Bookmark restored.");
+  } catch {
     toast.error("Failed to restore bookmark.");
-    return;
   }
-
-  isOpen.value = false;
-  toast.success("Bookmark restored.");
 }
 </script>
 
@@ -50,7 +44,11 @@ async function handleConfirm() {
         <Button variant="secondary" type="button" @click="handleClose">
           Cancel
         </Button>
-        <Button type="button" :loading="loading" @click="handleConfirm">
+        <Button
+          type="button"
+          :loading="unarchiveBookmarkMutation.isPending.value"
+          @click="handleConfirm"
+        >
           Unarchive
         </Button>
       </div>

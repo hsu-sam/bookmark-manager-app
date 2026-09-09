@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { watch } from "vue";
 import Input from "@/components/ui/Input.vue";
 import Modal from "@/components/ui/Modal.vue";
 import Button from "@/components/ui/Button.vue";
 import { useToast } from "@/composables/useToast";
 import { useForm } from "vee-validate";
 import { requiredRule } from "@/schemas/bookmark.schemas.ts";
-import { useFolders } from "@/services/useFolder";
+import { useUpdateFolder } from "@/services/useFolder";
 import type { Folder } from "@/types/folder";
 
 const isOpen = defineModel<boolean>();
@@ -16,8 +16,7 @@ const props = defineProps<{
 }>();
 
 const toast = useToast();
-const { updateFolder } = useFolders();
-const loading = ref(false);
+const updateFolderMutation = useUpdateFolder();
 
 const { handleSubmit, setFieldValue, resetForm } = useForm({
   validationSchema: {
@@ -39,20 +38,18 @@ function handleClose() {
 }
 
 const onSubmit = handleSubmit(async (values) => {
-  loading.value = true;
-  const folder = await updateFolder(props.folder.id, {
-    name: values.name.trim(),
-  });
-  loading.value = false;
+  try {
+    const folder = await updateFolderMutation.mutateAsync({
+      id: props.folder.id,
+      payload: { name: values.name.trim() },
+    });
 
-  if (!folder) {
+    isOpen.value = false;
+    resetForm();
+    toast.success(`Folder renamed to "${folder.name}".`);
+  } catch {
     toast.error("Failed to rename folder.");
-    return;
   }
-
-  isOpen.value = false;
-  resetForm();
-  toast.success(`Folder renamed to "${folder.name}".`);
 });
 </script>
 
@@ -74,7 +71,7 @@ const onSubmit = handleSubmit(async (values) => {
           <Button variant="secondary" type="button" @click="handleClose">
             Cancel
           </Button>
-          <Button type="submit" :loading="loading">Save</Button>
+          <Button type="submit" :loading="updateFolderMutation.isPending.value">Save</Button>
         </div>
       </form>
     </template>

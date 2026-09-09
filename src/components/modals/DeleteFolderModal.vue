@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { ref, watchEffect } from "vue";
+import { computed } from "vue";
+import { useQuery } from "@tanstack/vue-query";
 import Modal from "@/components/ui/Modal.vue";
 import Button from "@/components/ui/Button.vue";
 import { useToast } from "@/composables/useToast";
 import { supabase } from "@/utils/supabase";
-import { bumpBookmarksVersion } from "@/services/useBookmark";
-import { useFolders } from "@/services/useFolder";
+import { useDeleteFolder } from "@/services/useFolder";
 import { useBookmarkFolders } from "@/composables/useBookmarkFolders";
 import type { Folder } from "@/types/folder";
 
@@ -16,45 +16,41 @@ const props = defineProps<{
 }>();
 
 const toast = useToast();
-const { deleteFolder } = useFolders();
+const deleteFolderMutation = useDeleteFolder();
 const { selectedFolderId, clearFolder } = useBookmarkFolders();
-const loading = ref(false);
 
-const bookmarkCount = ref(0);
-
-watchEffect(async () => {
-  if (!isOpen.value) return;
-
-  const { count } = await supabase
-    .from("bookmarks")
-    .select("*", { count: "exact", head: true })
-    .eq("folder_id", props.folder.id);
-
-  bookmarkCount.value = count ?? 0;
+// `enabled` skips the request entirely while the modal is closed -- no need
+// for the manual "if (!isOpen.value) return" guard the old watchEffect had.
+const countQuery = useQuery({
+  queryKey: computed(() => ["folder-bookmark-count", props.folder.id] as const),
+  queryFn: async () => {
+    const { count } = await supabase
+      .from("bookmarks")
+      .select("*", { count: "exact", head: true })
+      .eq("folder_id", props.folder.id);
+    return count ?? 0;
+  },
+  enabled: computed(() => Boolean(isOpen.value)),
 });
+const bookmarkCount = computed(() => countQuery.data.value ?? 0);
 
 function handleClose() {
   isOpen.value = false;
 }
 
 async function handleConfirm() {
-  loading.value = true;
-  const success = await deleteFolder(props.folder.id);
-  loading.value = false;
+  try {
+    await deleteFolderMutation.mutateAsync(props.folder.id);
 
-  if (!success) {
+    if (selectedFolderId.value === props.folder.id) {
+      clearFolder();
+    }
+
+    isOpen.value = false;
+    toast.success(`Folder "${props.folder.name}" deleted.`);
+  } catch {
     toast.error("Failed to delete folder.");
-    return;
   }
-
-  bumpBookmarksVersion();
-
-  if (selectedFolderId.value === props.folder.id) {
-    clearFolder();
-  }
-
-  isOpen.value = false;
-  toast.success(`Folder "${props.folder.name}" deleted.`);
 }
 </script>
 
@@ -82,7 +78,7 @@ async function handleConfirm() {
         <Button
           variant="danger"
           type="button"
-          :loading="loading"
+          :loading="deleteFolderMutation.isPending.value"
           @click="handleConfirm"
         >
           Delete folder

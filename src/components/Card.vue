@@ -9,7 +9,7 @@ import ArchivedBookmarkModal from "./modals/ArchivedBookmarkModal.vue";
 import UnarchivedBookmarkModal from "./modals/UnarchivedBookmarkModal.vue";
 import DeleteBookmarkModal from "./modals/DeleteBookmark.vue";
 import MoveToFolderModal from "./modals/MoveToFolderModal.vue";
-import { useBookmarks } from "@/services/useBookmark.ts";
+import { useTogglePinBookmark } from "@/services/useBookmark.ts";
 import { useToast } from "@/composables/useToast.ts";
 
 const { formatDate } = useDate();
@@ -34,7 +34,7 @@ const isArchiveModalOpen = ref(false);
 const isUnarchiveModalOpen = ref(false);
 const isDeleteModalOpen = ref(false);
 const isMoveFolderModalOpen = ref(false);
-const { togglePin } = useBookmarks();
+const togglePinMutation = useTogglePinBookmark();
 
 const faviconFailed = ref(false);
 
@@ -74,14 +74,15 @@ function openMoveFolderModal() {
 }
 
 async function handleTogglePin(id: string) {
-  const result = await togglePin(id, props.bookmark.is_pinned);
-
-  if (!result) {
+  try {
+    const result = await togglePinMutation.mutateAsync({
+      id,
+      isPinned: props.bookmark.is_pinned,
+    });
+    toast.success(result.is_pinned ? "Bookmark pinned." : "Bookmark unpinned.");
+  } catch {
     toast.error("Failed to update pin status.");
-    return;
   }
-
-  toast.success(result.is_pinned ? "Bookmark pinned." : "Bookmark unpinned.");
 }
 </script>
 

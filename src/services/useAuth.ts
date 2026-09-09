@@ -1,7 +1,7 @@
 import { computed, ref } from "vue";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/utils/supabase";
-import { useFolders } from "./useFolder";
+import { queryClient } from "./queryClient";
 
 const user = ref<User | null>(null);
 const session = ref<Session | null>(null);
@@ -64,10 +64,10 @@ async function signOut() {
   const { error } = await supabase.auth.signOut();
 
   if (!error) {
-    // folders is a persistent module-level list (unlike the bookmark list,
-    // which each view fetches fresh); clear it so a different user signing
-    // in on the same tab doesn't briefly see the previous user's folders.
-    useFolders().folders.value = [];
+    // Wipes every cached query app-wide (bookmarks, folders, counts) so a
+    // different user signing in on the same tab always gets a fresh fetch
+    // scoped to whatever auth.uid() now resolves to under RLS.
+    queryClient.clear();
   }
 
   return { error };

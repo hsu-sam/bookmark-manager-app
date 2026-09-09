@@ -4,7 +4,10 @@ import Input from "@/components/ui/Input.vue";
 import Modal from "../ui/Modal.vue";
 import Textarea from "@/components/ui/Textarea.vue";
 import Button from "../ui/Button.vue";
-import { useBookmarks } from "@/services/useBookmark.ts";
+import {
+  useUpdateBookmark,
+  findDuplicateBookmark,
+} from "@/services/useBookmark.ts";
 import type { Bookmark } from "@/types/bookmark.ts";
 import { useToast } from "@/composables/useToast";
 import { isValidUrl } from "@/utils/url";
@@ -20,7 +23,7 @@ const emit = defineEmits<{
   updated: [];
 }>();
 
-const { updateBookmark, findDuplicateBookmark } = useBookmarks();
+const updateBookmarkMutation = useUpdateBookmark();
 
 const form = ref({
   title: "",
@@ -97,16 +100,14 @@ const handleUpdate = async () => {
       .filter(Boolean),
   };
 
-  const result = await updateBookmark(props.bookmark.id, payload);
-
-  if (!result) {
-    toast.error("Failed to update bookmark.");
-    return;
+  try {
+    await updateBookmarkMutation.mutateAsync({ id: props.bookmark.id, payload });
+    isOpen.value = false;
+    emit("updated");
+    toast.success("Bookmark updated successfully!");
+  } catch (err) {
+    toast.error(err instanceof Error ? err.message : "Failed to update bookmark.");
   }
-
-  isOpen.value = false;
-  emit("updated");
-  toast.success("Bookmark updated successfully!");
 };
 
 const handleCloseModal = () => {
@@ -172,7 +173,11 @@ const handleCloseModal = () => {
             Cancel
           </Button>
 
-          <Button type="submit" :disabled="!!duplicateBookmark">
+          <Button
+            type="submit"
+            :loading="updateBookmarkMutation.isPending.value"
+            :disabled="!!duplicateBookmark"
+          >
             Save Bookmark
           </Button>
         </div>

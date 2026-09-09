@@ -1,17 +1,15 @@
 <script setup lang="ts">
-import { ref } from "vue";
 import Input from "@/components/ui/Input.vue";
 import Modal from "@/components/ui/Modal.vue";
 import Button from "@/components/ui/Button.vue";
 import { useToast } from "@/composables/useToast";
 import { useForm } from "vee-validate";
 import { requiredRule } from "@/schemas/bookmark.schemas.ts";
-import { useFolders } from "@/services/useFolder";
+import { useCreateFolder } from "@/services/useFolder";
 
 const isOpen = defineModel<boolean>();
 const toast = useToast();
-const { createFolder } = useFolders();
-const loading = ref(false);
+const createFolderMutation = useCreateFolder();
 
 const { handleSubmit, resetForm } = useForm({
   validationSchema: {
@@ -25,18 +23,14 @@ function handleClose() {
 }
 
 const onSubmit = handleSubmit(async (values) => {
-  loading.value = true;
-  const folder = await createFolder({ name: values.name });
-  loading.value = false;
-
-  if (!folder) {
+  try {
+    const folder = await createFolderMutation.mutateAsync({ name: values.name });
+    isOpen.value = false;
+    resetForm();
+    toast.success(`Folder "${folder.name}" created.`);
+  } catch {
     toast.error("Failed to create folder.");
-    return;
   }
-
-  isOpen.value = false;
-  resetForm();
-  toast.success(`Folder "${folder.name}" created.`);
 });
 </script>
 
@@ -58,7 +52,7 @@ const onSubmit = handleSubmit(async (values) => {
           <Button variant="secondary" type="button" @click="handleClose">
             Cancel
           </Button>
-          <Button type="submit" :loading="loading">Create Folder</Button>
+          <Button type="submit" :loading="createFolderMutation.isPending.value">Create Folder</Button>
         </div>
       </form>
     </template>

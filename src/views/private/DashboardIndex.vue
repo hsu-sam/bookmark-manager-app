@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { computed, onMounted } from "vue";
+import { computed } from "vue";
 import Card from "@/components/Card.vue";
-import { useFolders } from "@/services/useFolder";
 import { useBookmarkSearch } from "@/composables/useBookmarkSearch";
 import { useBookmarkTags } from "@/composables/useBookmarkTags";
 import { useBookmarkFolders } from "@/composables/useBookmarkFolders";
@@ -10,7 +9,6 @@ import CardSkeleton from "@/components/Skeletons/CardSkeleton.vue";
 import Pagination from "@/components/ui/Pagination.vue";
 import { useBookmarkList } from "@/composables/useBookmarkList";
 
-const { fetchFolders } = useFolders();
 const { searchQuery } = useBookmarkSearch();
 const { selectedTags } = useBookmarkTags();
 const { selectedFolderName } = useBookmarkFolders();
@@ -24,10 +22,6 @@ const hasActiveFilters = computed(
     selectedTags.value.length > 0 ||
     Boolean(selectedFolderName.value),
 );
-
-onMounted(() => {
-  fetchFolders();
-});
 </script>
 
 <template>

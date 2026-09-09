@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, ref } from "vue";
+import { useQuery } from "@tanstack/vue-query";
 import { Icon } from "@iconify/vue";
 import { useRoute } from "vue-router";
 import SidebarSection from "./SidebarSection.vue";
@@ -8,7 +9,7 @@ import CreateFolderModal from "@/components/modals/CreateFolderModal.vue";
 import EditFolderModal from "@/components/modals/EditFolderModal.vue";
 import DeleteFolderModal from "@/components/modals/DeleteFolderModal.vue";
 import { supabase } from "@/utils/supabase";
-import { bookmarksVersion } from "@/services/useBookmark";
+import { folderCountKeys } from "@/services/queryKeys";
 import { useFolders } from "@/services/useFolder";
 import { useBookmarkFolders } from "@/composables/useBookmarkFolders";
 import { UNCATEGORIZED_FOLDER_ID } from "@/types/folder";
@@ -20,6 +21,7 @@ const emit = defineEmits<{
 }>();
 
 const route = useRoute();
+const isArchived = computed(() => route.name === "user.archived");
 const { folders } = useFolders();
 const {
   selectedFolderId,
@@ -33,35 +35,29 @@ const isEditModalOpen = ref(false);
 const isDeleteModalOpen = ref(false);
 const activeFolder = ref<Folder | null>(null);
 
-const folderCounts = ref(new Map<string, number>());
-const uncategorizedCount = ref(0);
-
-async function fetchFolderCounts() {
-  const isArchived = route.name === "user.archived";
-  const { data, error } = await supabase.rpc("bookmark_folder_counts", {
-    p_is_archived: isArchived,
-  });
-
-  if (error || !data) return;
-
-  const counts = new Map<string, number>();
-  let uncategorized = 0;
-
-  for (const row of data as { folder_id: string | null; count: number }[]) {
-    if (row.folder_id) {
-      counts.set(row.folder_id, row.count);
-    } else {
-      uncategorized = row.count;
-    }
-  }
-
-  folderCounts.value = counts;
-  uncategorizedCount.value = uncategorized;
-}
-
-watch([() => route.name, bookmarksVersion], fetchFolderCounts, {
-  immediate: true,
+const countsQuery = useQuery({
+  queryKey: computed(() => folderCountKeys.scoped(isArchived.value)),
+  queryFn: async () => {
+    const { data, error: err } = await supabase.rpc("bookmark_folder_counts", {
+      p_is_archived: isArchived.value,
+    });
+    if (err) throw new Error(err.message);
+    return data as { folder_id: string | null; count: number }[];
+  },
 });
+
+const folderCounts = computed(() => {
+  const counts = new Map<string, number>();
+  for (const row of countsQuery.data.value ?? []) {
+    if (row.folder_id) counts.set(row.folder_id, row.count);
+  }
+  return counts;
+});
+
+const uncategorizedCount = computed(
+  () =>
+    (countsQuery.data.value ?? []).find((row) => !row.folder_id)?.count ?? 0,
+);
 
 const folderRows = computed(() =>
   [...folders.value]

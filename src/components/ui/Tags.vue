@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed } from "vue";
+import { useQuery } from "@tanstack/vue-query";
 import { Icon } from "@iconify/vue";
 import { useRoute } from "vue-router";
 import SidebarSection from "./SidebarSection.vue";
 import { supabase } from "@/utils/supabase";
-import { bookmarksVersion } from "@/services/useBookmark";
+import { tagCountKeys } from "@/services/queryKeys";
 import { useBookmarkTags } from "@/composables/useBookmarkTags";
 
 const emit = defineEmits<{
@@ -12,26 +13,27 @@ const emit = defineEmits<{
 }>();
 
 const route = useRoute();
+const isArchived = computed(() => route.name === "user.archived");
 const { selectedTags, toggleTag, clearTags } = useBookmarkTags();
 
-const tagsWithCounts = ref<{ name: string; count: number }[]>([]);
-
-async function fetchTagCounts() {
-  const isArchived = route.name === "user.archived";
-  const { data, error } = await supabase.rpc("bookmark_tag_counts", {
-    p_is_archived: isArchived,
-  });
-
-  if (error || !data) return;
-
-  tagsWithCounts.value = (data as { tag: string; count: number }[]).map(
-    (row) => ({ name: row.tag, count: row.count }),
-  );
-}
-
-watch([() => route.name, bookmarksVersion], fetchTagCounts, {
-  immediate: true,
+const countsQuery = useQuery({
+  queryKey: computed(() => tagCountKeys.scoped(isArchived.value)),
+  queryFn: async () => {
+    const { data, error: err } = await supabase.rpc("bookmark_tag_counts", {
+      p_is_archived: isArchived.value,
+    });
+    if (err) throw new Error(err.message);
+    return data as { tag: string; count: number }[];
+  },
 });
+
+const tagsWithCounts = computed(
+  () =>
+    countsQuery.data.value?.map((row) => ({
+      name: row.tag,
+      count: row.count,
+    })) ?? [],
+);
 
 function handleTagClick(tag: string) {
   toggleTag(tag);

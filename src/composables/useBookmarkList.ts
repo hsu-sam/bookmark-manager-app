@@ -1,64 +1,24 @@
 import { computed, ref, watch } from "vue";
-import { bookmarksVersion, useBookmarks } from "@/services/useBookmark";
+import { keepPreviousData, useQuery } from "@tanstack/vue-query";
+import { listBookmarks } from "@/services/useBookmark";
+import { bookmarkKeys } from "@/services/queryKeys";
 import { useBookmarkSearch } from "./useBookmarkSearch";
 import { useBookmarkTags } from "./useBookmarkTags";
 import { useBookmarkFolders } from "./useBookmarkFolders";
 import { useBookmarkSort } from "./useBookmarkSort";
-import type { Bookmark } from "@/types/bookmark";
 
 export const PAGE_SIZE = 10;
 const SEARCH_DEBOUNCE_MS = 300;
 
 export function useBookmarkList(archived: boolean) {
-  const { listBookmarks } = useBookmarks();
   const { searchQuery } = useBookmarkSearch();
   const { selectedTags } = useBookmarkTags();
   const { selectedFolderId } = useBookmarkFolders();
   const { sortBy } = useBookmarkSort();
 
-  const bookmarks = ref<Bookmark[]>([]);
-  const loading = ref(false);
-  const error = ref<string | null>(null);
   const currentPage = ref(1);
-  const totalItems = ref(0);
 
-  const totalPages = computed(() =>
-    Math.max(1, Math.ceil(totalItems.value / PAGE_SIZE)),
-  );
-
-  async function refresh() {
-    loading.value = true;
-    error.value = null;
-
-    const result = await listBookmarks({
-      archived,
-      page: currentPage.value,
-      pageSize: PAGE_SIZE,
-      search: searchQuery.value,
-      folderId: selectedFolderId.value,
-      tags: selectedTags.value,
-      sort: sortBy.value,
-    });
-
-    loading.value = false;
-
-    if (result.error) {
-      error.value = result.error;
-      bookmarks.value = [];
-      totalItems.value = 0;
-      return;
-    }
-
-    bookmarks.value = result.data;
-    totalItems.value = result.count;
-
-    const maxPage = Math.max(1, Math.ceil(totalItems.value / PAGE_SIZE));
-    if (currentPage.value > maxPage) {
-      currentPage.value = maxPage;
-    }
-  }
-
-  // Debounce only the search text; every other input refetches immediately.
+  // Debounce only the search text; every other filter refetches immediately.
   const debouncedSearch = ref(searchQuery.value);
   let searchDebounceTimer: ReturnType<typeof setTimeout> | null = null;
   watch(searchQuery, (next) => {
@@ -68,43 +28,63 @@ export function useBookmarkList(archived: boolean) {
     }, SEARCH_DEBOUNCE_MS);
   });
 
-  // Any filter/sort change jumps back to page 1.
+  // Any filter/sort change jumps back to page 1. currentPage itself becomes
+  // part of the query key below, so this is what triggers the refetch --
+  // no separate "reset and refresh" call needed.
   watch([debouncedSearch, selectedTags, selectedFolderId, sortBy], () => {
     currentPage.value = 1;
   });
 
-  const queryKey = computed(() =>
-    JSON.stringify({
-      page: currentPage.value,
-      search: debouncedSearch.value.trim(),
-      tags: [...selectedTags.value].sort(),
-      folderId: selectedFolderId.value,
-      sort: sortBy.value,
-      version: bookmarksVersion.value,
-    }),
+  const params = computed(() => ({
+    archived,
+    page: currentPage.value,
+    pageSize: PAGE_SIZE,
+    search: debouncedSearch.value.trim(),
+    folderId: selectedFolderId.value,
+    tags: [...selectedTags.value].sort(),
+    sort: sortBy.value,
+  }));
+
+  const query = useQuery({
+    queryKey: computed(() => bookmarkKeys.list(params.value)),
+    queryFn: () => listBookmarks(params.value),
+    // Without this, the grid would flash empty/skeleton every time you
+    // change page or filters, because a new query key starts with no data.
+    // keepPreviousData keeps rendering the last page's results (query.data)
+    // while the new request is in flight, so isPending only stays true on
+    // the very first load -- exactly what the skeleton condition wants.
+    placeholderData: keepPreviousData,
+  });
+
+  const bookmarks = computed(() => query.data.value?.data ?? []);
+  const totalItems = computed(() => query.data.value?.count ?? 0);
+  const totalPages = computed(() =>
+    Math.max(1, Math.ceil(totalItems.value / PAGE_SIZE)),
   );
 
-  let isFirstFetch = true;
-  watch(
-    queryKey,
-    () => {
-      refresh();
-      if (!isFirstFetch) {
-        document.querySelector("main")?.scrollTo({ top: 0, behavior: "smooth" });
-      }
-      isFirstFetch = false;
-    },
-    { immediate: true },
-  );
+  // If a delete shrinks the result set below the current page, snap back.
+  watch(totalPages, (maxPage) => {
+    if (currentPage.value > maxPage) {
+      currentPage.value = maxPage;
+    }
+  });
+
+  let isFirstLoad = true;
+  watch(bookmarks, () => {
+    if (!isFirstLoad) {
+      document.querySelector("main")?.scrollTo({ top: 0, behavior: "smooth" });
+    }
+    isFirstLoad = false;
+  });
 
   return {
     bookmarks,
-    loading,
-    error,
+    loading: query.isPending,
+    error: computed(() => query.error.value?.message ?? null),
     currentPage,
     totalPages,
     totalItems,
     pageSize: PAGE_SIZE,
-    refresh,
+    refresh: query.refetch,
   };
 }

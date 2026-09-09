@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed } from "vue";
 import { Icon } from "@iconify/vue";
 import Modal from "@/components/ui/Modal.vue";
 import Button from "@/components/ui/Button.vue";
 import type { Bookmark } from "@/types/bookmark";
 import { useToast } from "@/composables/useToast";
-import { useBookmarks } from "@/services/useBookmark";
+import { useUpdateBookmark } from "@/services/useBookmark";
 import { useFolders } from "@/services/useFolder";
 
 const isOpen = defineModel<boolean>();
@@ -15,9 +15,8 @@ const props = defineProps<{
 }>();
 
 const toast = useToast();
-const { updateBookmark } = useBookmarks();
+const updateBookmarkMutation = useUpdateBookmark();
 const { folders } = useFolders();
-const loading = ref(false);
 
 const sortedFolders = computed(() =>
   [...folders.value].sort((a, b) => a.name.localeCompare(b.name)),
@@ -28,25 +27,25 @@ function handleClose() {
 }
 
 async function moveToFolder(folderId: string | null) {
-  loading.value = true;
-  const result = await updateBookmark(props.bookmark.id, { folder_id: folderId });
-  loading.value = false;
+  try {
+    await updateBookmarkMutation.mutateAsync({
+      id: props.bookmark.id,
+      payload: { folder_id: folderId },
+    });
 
-  if (!result) {
+    isOpen.value = false;
+
+    if (folderId) {
+      const folderName =
+        folders.value.find((folder) => folder.id === folderId)?.name ?? "folder";
+      toast.success(`Moved to "${folderName}".`);
+      return;
+    }
+
+    toast.success("Removed from folder.");
+  } catch {
     toast.error("Failed to move bookmark.");
-    return;
   }
-
-  isOpen.value = false;
-
-  if (folderId) {
-    const folderName =
-      folders.value.find((folder) => folder.id === folderId)?.name ?? "folder";
-    toast.success(`Moved to "${folderName}".`);
-    return;
-  }
-
-  toast.success("Removed from folder.");
 }
 </script>
 
@@ -66,7 +65,7 @@ async function moveToFolder(folderId: string | null) {
           v-if="bookmark.folder_id"
           type="button"
           class="flex w-full items-center gap-100 rounded-8 px-150 py-125 text-left transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-dark-600"
-          :disabled="loading"
+          :disabled="updateBookmarkMutation.isPending.value"
           @click="moveToFolder(null)"
         >
           <Icon
@@ -88,7 +87,7 @@ async function moveToFolder(folderId: string | null) {
               ? 'bg-neutral-100 dark:bg-neutral-dark-600'
               : ''
           "
-          :disabled="loading"
+          :disabled="updateBookmarkMutation.isPending.value"
           @click="moveToFolder(folder.id)"
         >
           <Icon

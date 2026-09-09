@@ -1,4 +1,4 @@
-import { ref } from "vue";
+import { useMutation, useQueryClient } from "@tanstack/vue-query";
 import { supabase } from "@/utils/supabase";
 import { UNCATEGORIZED_FOLDER_ID } from "@/types/folder";
 import type {
@@ -7,19 +7,9 @@ import type {
   UpdateBookmarkPayload,
 } from "@/types/bookmark";
 import type { BookmarkSortOption } from "@/composables/useBookmarkSort";
+import { bookmarkKeys, folderCountKeys, tagCountKeys } from "./queryKeys";
 
 const DUPLICATE_URL_MESSAGE = "This URL already exists in your bookmarks.";
-
-const loading = ref(false);
-const error = ref<string | null>(null);
-
-// Bumped after any mutation so list views (which each hold only their own
-// current page) know to refetch. See useBookmarkList.ts.
-export const bookmarksVersion = ref(0);
-export function bumpBookmarksVersion() {
-  bookmarksVersion.value += 1;
-}
-const bumpVersion = bumpBookmarksVersion;
 
 export interface ListBookmarksParams {
   archived: boolean;
@@ -34,10 +24,11 @@ export interface ListBookmarksParams {
 export interface ListBookmarksResult {
   data: Bookmark[];
   count: number;
-  error: string | null;
 }
 
-async function listBookmarks(
+// A TanStack Query `queryFn` must throw on failure -- that's how the query
+// ends up in an `error` state instead of silently succeeding with no data.
+export async function listBookmarks(
   params: ListBookmarksParams,
 ): Promise<ListBookmarksResult> {
   let query = supabase
@@ -81,14 +72,12 @@ async function listBookmarks(
     start + params.pageSize - 1,
   );
 
-  return {
-    data: err ? [] : ((data ?? []) as Bookmark[]),
-    count: err ? 0 : (count ?? 0),
-    error: err?.message ?? null,
-  };
+  if (err) throw new Error(err.message);
+
+  return { data: (data ?? []) as Bookmark[], count: count ?? 0 };
 }
 
-async function findDuplicateBookmark(
+export async function findDuplicateBookmark(
   url: string,
   excludeId?: string,
 ): Promise<Bookmark | null> {
@@ -103,122 +92,122 @@ async function findDuplicateBookmark(
   return (data as Bookmark | null) ?? null;
 }
 
-export function useBookmarks() {
-  const addBookmark = async (payload: AddBookmarkPayload) => {
-    loading.value = true;
-    error.value = null;
+function invalidateBookmarkCaches(queryClient: ReturnType<typeof useQueryClient>) {
+  queryClient.invalidateQueries({ queryKey: bookmarkKeys.all });
+  queryClient.invalidateQueries({ queryKey: folderCountKeys.all });
+  queryClient.invalidateQueries({ queryKey: tagCountKeys.all });
+}
 
-    if (await findDuplicateBookmark(payload.url)) {
-      error.value = DUPLICATE_URL_MESSAGE;
-      loading.value = false;
-      return null;
-    }
+async function insertBookmark(payload: AddBookmarkPayload): Promise<Bookmark> {
+  if (await findDuplicateBookmark(payload.url)) {
+    throw new Error(DUPLICATE_URL_MESSAGE);
+  }
 
-    const { data, error: err } = await supabase
-      .from("bookmarks")
-      .insert([payload])
-      .select("*")
-      .single();
+  const { data, error: err } = await supabase
+    .from("bookmarks")
+    .insert([payload])
+    .select("*")
+    .single();
 
-    loading.value = false;
+  if (err) {
+    throw new Error(err.code === "23505" ? DUPLICATE_URL_MESSAGE : err.message);
+  }
 
-    if (err) {
-      error.value =
-        err.code === "23505" ? DUPLICATE_URL_MESSAGE : err.message;
-      return null;
-    }
+  return data as Bookmark;
+}
 
-    bumpVersion();
-    return data as Bookmark;
-  };
+async function patchBookmark(
+  id: string,
+  payload: UpdateBookmarkPayload,
+): Promise<Bookmark> {
+  if (payload.url && (await findDuplicateBookmark(payload.url, id))) {
+    throw new Error(DUPLICATE_URL_MESSAGE);
+  }
 
-  const updateBookmark = async (id: string, payload: UpdateBookmarkPayload) => {
-    loading.value = true;
-    error.value = null;
+  const { data, error: err } = await supabase
+    .from("bookmarks")
+    .update(payload)
+    .eq("id", id)
+    .select("*")
+    .single();
 
-    if (payload.url && (await findDuplicateBookmark(payload.url, id))) {
-      error.value = DUPLICATE_URL_MESSAGE;
-      loading.value = false;
-      return null;
-    }
+  if (err) {
+    throw new Error(err.code === "23505" ? DUPLICATE_URL_MESSAGE : err.message);
+  }
 
-    const { data, error: err } = await supabase
-      .from("bookmarks")
-      .update(payload)
-      .eq("id", id)
-      .select("*")
-      .single();
+  return data as Bookmark;
+}
 
-    loading.value = false;
+async function removeBookmark(id: string): Promise<void> {
+  const { error: err } = await supabase.from("bookmarks").delete().eq("id", id);
+  if (err) throw new Error(err.message);
+}
 
-    if (err) {
-      error.value =
-        err.code === "23505" ? DUPLICATE_URL_MESSAGE : err.message;
-      return null;
-    }
+// Each of these is a small wrapper around useMutation, called fresh from
+// whichever component triggers the action. Every component gets its OWN
+// isPending/error for that specific mutation (e.g. only the button that was
+// clicked shows a spinner) while still sharing the same underlying cache.
+export function useAddBookmark() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: insertBookmark,
+    onSuccess: () => invalidateBookmarkCaches(queryClient),
+  });
+}
 
-    bumpVersion();
-    return data as Bookmark;
-  };
+export function useUpdateBookmark() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: UpdateBookmarkPayload }) =>
+      patchBookmark(id, payload),
+    onSuccess: () => invalidateBookmarkCaches(queryClient),
+  });
+}
 
-  const togglePin = async (id: string, isPinned: boolean) => {
-    return updateBookmark(id, { is_pinned: !isPinned });
-  };
+export function useDeleteBookmark() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: removeBookmark,
+    onSuccess: () => invalidateBookmarkCaches(queryClient),
+  });
+}
 
-  const archiveBookmark = async (id: string) => {
-    return updateBookmark(id, { is_archived: true });
-  };
+export function useTogglePinBookmark() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, isPinned }: { id: string; isPinned: boolean }) =>
+      patchBookmark(id, { is_pinned: !isPinned }),
+    onSuccess: () => invalidateBookmarkCaches(queryClient),
+  });
+}
 
-  const unarchiveBookmark = async (id: string) => {
-    return updateBookmark(id, { is_archived: false });
-  };
+export function useArchiveBookmark() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => patchBookmark(id, { is_archived: true }),
+    onSuccess: () => invalidateBookmarkCaches(queryClient),
+  });
+}
 
-  const deleteBookmark = async (id: string) => {
-    loading.value = true;
-    error.value = null;
+export function useUnarchiveBookmark() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => patchBookmark(id, { is_archived: false }),
+    onSuccess: () => invalidateBookmarkCaches(queryClient),
+  });
+}
 
-    const { error: err } = await supabase
-      .from("bookmarks")
-      .delete()
-      .eq("id", id);
-
-    loading.value = false;
-
-    if (err) {
-      error.value = err.message;
-      return false;
-    }
-
-    bumpVersion();
-    return true;
-  };
-
-  const recordVisit = async (id: string) => {
-    const { data, error: err } = await supabase.rpc(
-      "increment_bookmark_visit",
-      { bookmark_id: id },
-    );
-
-    if (err) {
-      error.value = err.message;
-      return null;
-    }
-
-    bumpVersion();
-    return data as Bookmark;
-  };
-
-  return {
-    loading,
-    error,
-    listBookmarks,
-    findDuplicateBookmark,
-    addBookmark,
-    updateBookmark,
-    togglePin,
-    archiveBookmark,
-    unarchiveBookmark,
-    deleteBookmark,
-    recordVisit,
-  };
+export function useRecordBookmarkVisit() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { data, error: err } = await supabase.rpc(
+        "increment_bookmark_visit",
+        { bookmark_id: id },
+      );
+      if (err) throw new Error(err.message);
+      return data as Bookmark;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: bookmarkKeys.all }),
+  });
 }
