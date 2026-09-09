@@ -81,9 +81,3 @@ const isOverLimit = computed(() => charCount.value > props.maxLength);
     </label>
   </Field>
 </template>
-
-<style scoped>
-/* .textarea-container:has(:focus-visible) {
-  @apply outline-none ring-1 ring-teal-800;
-} */
-</style>

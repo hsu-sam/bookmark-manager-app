@@ -18,7 +18,6 @@ export function useBookmarkList(archived: boolean) {
 
   const currentPage = ref(1);
 
-  // Debounce only the search text; every other filter refetches immediately.
   const debouncedSearch = ref(searchQuery.value);
   let searchDebounceTimer: ReturnType<typeof setTimeout> | null = null;
   watch(searchQuery, (next) => {
@@ -28,9 +27,6 @@ export function useBookmarkList(archived: boolean) {
     }, SEARCH_DEBOUNCE_MS);
   });
 
-  // Any filter/sort change jumps back to page 1. currentPage itself becomes
-  // part of the query key below, so this is what triggers the refetch --
-  // no separate "reset and refresh" call needed.
   watch([debouncedSearch, selectedTags, selectedFolderId, sortBy], () => {
     currentPage.value = 1;
   });
@@ -48,11 +44,6 @@ export function useBookmarkList(archived: boolean) {
   const query = useQuery({
     queryKey: computed(() => bookmarkKeys.list(params.value)),
     queryFn: () => listBookmarks(params.value),
-    // Without this, the grid would flash empty/skeleton every time you
-    // change page or filters, because a new query key starts with no data.
-    // keepPreviousData keeps rendering the last page's results (query.data)
-    // while the new request is in flight, so isPending only stays true on
-    // the very first load -- exactly what the skeleton condition wants.
     placeholderData: keepPreviousData,
   });
 
@@ -62,7 +53,6 @@ export function useBookmarkList(archived: boolean) {
     Math.max(1, Math.ceil(totalItems.value / PAGE_SIZE)),
   );
 
-  // If a delete shrinks the result set below the current page, snap back.
   watch(totalPages, (maxPage) => {
     if (currentPage.value > maxPage) {
       currentPage.value = maxPage;

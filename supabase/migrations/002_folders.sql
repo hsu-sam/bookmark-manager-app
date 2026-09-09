@@ -1,6 +1,3 @@
--- Folders for bookmark organization.
--- Run in Supabase SQL Editor or via `supabase db push`.
-
 CREATE TABLE IF NOT EXISTS folders (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id uuid REFERENCES auth.users NOT NULL,

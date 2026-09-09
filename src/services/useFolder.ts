@@ -18,12 +18,6 @@ async function fetchFolders(): Promise<Folder[]> {
   return (data ?? []) as Folder[];
 }
 
-// No module-level `ref` here anymore. Every component that calls
-// useFolders() issues a useQuery with the SAME key (folderKeys.all), so
-// TanStack Query dedupes them: the first caller triggers the fetch, every
-// other caller just reads the shared cached result. That's what used to
-// require the hand-rolled singleton ref pattern -- the cache itself is now
-// the shared store.
 export function useFolders() {
   const query = useQuery({
     queryKey: folderKeys.all,
@@ -94,10 +88,6 @@ export function useDeleteFolder() {
       if (err) throw new Error(err.message);
     },
     onSuccess: () => {
-      // Deleting a folder reaches into the bookmarks domain too (their
-      // folder_id gets nulled server-side by the ON DELETE SET NULL FK), so
-      // this invalidates across both -- a mutation's onSuccess is the right
-      // place for that, not the component that happened to trigger it.
       queryClient.invalidateQueries({ queryKey: folderKeys.all });
       queryClient.invalidateQueries({ queryKey: bookmarkKeys.all });
       queryClient.invalidateQueries({ queryKey: folderCountKeys.all });

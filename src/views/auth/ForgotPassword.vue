@@ -23,8 +23,6 @@ const onSubmit = handleSubmit(async (values) => {
   loading.value = true;
   await sendPasswordReset(values.email as string);
   loading.value = false;
-  // Always show the same message, whether or not the account exists,
-  // to avoid leaking which emails are registered.
   toast.success(
     "If an account exists for that email, you'll receive a reset link shortly.",
   );

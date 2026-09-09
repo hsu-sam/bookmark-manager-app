@@ -26,12 +26,10 @@ export const icon: Plugin = {
       );
       localIcons[name!] = {
         body: svgFiles[path]?.default!,
-        // .replace(/<svg[^>]*>|<\/svg>/g, '')
         width,
         height,
       };
     }
-    // console.log("Loaded local icons:", Object.keys(localIcons));
     addCollection({
       prefix: "local",
       icons: localIcons,

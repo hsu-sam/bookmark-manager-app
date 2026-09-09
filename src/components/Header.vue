@@ -54,7 +54,6 @@ useKeyboardShortcuts({
         <span class="hidden md:block">Add Bookmark</span>
       </Button>
 
-      <!-- Profile  -->
       <ProfileMenu />
     </div>
   </div>

@@ -47,8 +47,6 @@ export const router = createRouter({
   routes,
 });
 
-// / Middlewares
-
 router.beforeEach(async (to) => {
   const { isReady, isAuthenticated, isPasswordRecovery, initAuth } = useAuth();
 

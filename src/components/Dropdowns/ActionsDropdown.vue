@@ -51,16 +51,6 @@ const bookmarkActions = computed(() => {
       icon: "local:icon-copy",
       action: handleCopy,
     },
-    // {
-    //   label: props.bookmark.is_pinned ? "Unpin" : "Pin",
-    //   icon: "local:icon-pin",
-    //   action: () => emit("toggle-pin", props.bookmark.id),
-    // },
-    // {
-    //   label: "Edit",
-    //   icon: "local:icon-edit",
-    //   action: () => emit("edit"),
-    // },
   ];
 
   if (props.archived) {

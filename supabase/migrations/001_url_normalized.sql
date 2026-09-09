@@ -1,6 +1,3 @@
--- Normalise bookmark URLs for duplicate detection.
--- Run in Supabase SQL Editor or via `supabase db push`.
-
 CREATE OR REPLACE FUNCTION normalize_bookmark_url(raw_url text)
 RETURNS text
 LANGUAGE plpgsql

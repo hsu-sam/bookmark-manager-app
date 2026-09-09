@@ -46,7 +46,6 @@ const isOpen = defineModel<boolean>();
         class="flex flex-col gap-400 fixed left-1/2 top-1/2 z-100 -translate-x-1/2 -translate-y-1/2 rounded-16 p-400 bg-neutral-0 dark:bg-neutral-dark-800 data-[state=open]:animate-contentShow data-[state=closed]:animate-contentHide"
         :class="[contentClass, width || 'w-[90vw] max-w-[500px]']"
       >
-        <!-- Close button -->
         <DialogClose
           v-if="!hideDefaultClose"
           class="absolute top-3 right-200"
@@ -57,7 +56,6 @@ const isOpen = defineModel<boolean>();
           </Button>
         </DialogClose>
 
-        <!-- Header -->
         <div
           v-if="$slots.title || $slots.description"
           class="flex flex-col gap-100"
@@ -70,12 +68,10 @@ const isOpen = defineModel<boolean>();
           </DialogDescription>
         </div>
 
-        <!-- Main content -->
         <div class="flex flex-col gap-250">
           <slot name="main" />
         </div>
 
-        <!-- Footer -->
         <div v-if="$slots.footer" class="flex items-center justify-end gap-200">
           <slot name="footer" />
         </div>

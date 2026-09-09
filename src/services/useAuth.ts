@@ -64,9 +64,6 @@ async function signOut() {
   const { error } = await supabase.auth.signOut();
 
   if (!error) {
-    // Wipes every cached query app-wide (bookmarks, folders, counts) so a
-    // different user signing in on the same tab always gets a fresh fetch
-    // scoped to whatever auth.uid() now resolves to under RLS.
     queryClient.clear();
   }
 

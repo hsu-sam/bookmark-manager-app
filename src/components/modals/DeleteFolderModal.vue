@@ -19,8 +19,6 @@ const toast = useToast();
 const deleteFolderMutation = useDeleteFolder();
 const { selectedFolderId, clearFolder } = useBookmarkFolders();
 
-// `enabled` skips the request entirely while the modal is closed -- no need
-// for the manual "if (!isOpen.value) return" guard the old watchEffect had.
 const countQuery = useQuery({
   queryKey: computed(() => ["folder-bookmark-count", props.folder.id] as const),
   queryFn: async () => {

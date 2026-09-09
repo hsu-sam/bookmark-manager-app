@@ -41,10 +41,8 @@ withDefaults(defineProps<DropdownProps>(), {
         class="z-50 min-w-[180px] origin-[var(--radix-dropdown-menu-content-transform-origin)] rounded-xl border border-neutral-200 bg-white shadow-lg p-1 outline-none dark:border-neutral-dark-500 dark:bg-neutral-dark-800 data-[state=open]:animate-dropdownShow data-[state=closed]:animate-dropdownHide"
         :class="contentClass"
       >
-        <!-- Custom content slot (for profile menu etc.) -->
         <slot name="content" />
 
-        <!-- Simple items list -->
         <template v-if="items?.length">
           <template v-for="(item, i) in items" :key="i">
             <DropdownMenuSeparator

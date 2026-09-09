@@ -32,12 +32,9 @@ watch(
 
 <template>
   <div class="flex h-screen overflow-hidden">
-    <!-- Sidebar -->
     <SideBar :is-open="sidebarOpen" @close="closeSidebar" />
 
-    <!-- Right Section -->
     <div class="flex min-h-0 flex-1 flex-col overflow-hidden">
-      <!-- Header -->
       <div class="shrink-0">
         <Header @open-sidebar="openSidebar" />
       </div>
@@ -46,7 +43,6 @@ watch(
         <BookmarkHeader />
       </div>
 
-      <!-- Main Content -->
       <main class="flex min-h-0 flex-1 flex-col overflow-y-auto px-6 pb-6 pt-250">
         <div class="flex min-h-full flex-1 flex-col">
           <router-view />

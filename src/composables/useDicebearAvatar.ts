@@ -12,7 +12,6 @@ export function getAvatarUrl(seed: string, size = 128) {
     size: String(size),
   });
 
-  // return `https://api.dicebear.com/9.x/${AVATAR_STYLE}/png?${params.toString()}`;
   return `https://api.dicebear.com/10.x/adventurer/svg?${params.toString()}`;
 }
 

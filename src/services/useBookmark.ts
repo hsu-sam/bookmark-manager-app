@@ -26,8 +26,6 @@ export interface ListBookmarksResult {
   count: number;
 }
 
-// A TanStack Query `queryFn` must throw on failure -- that's how the query
-// ends up in an `error` state instead of silently succeeding with no data.
 export async function listBookmarks(
   params: ListBookmarksParams,
 ): Promise<ListBookmarksResult> {
@@ -48,9 +46,6 @@ export async function listBookmarks(
 
   const search = params.search.trim();
   if (search) {
-    // PostgREST's `.or()` treats "," as a filter separator and reserves a
-    // handful of other characters; wrapping the value in double quotes
-    // escapes them, but the value itself can't contain a literal comma.
     const safe = `"%${search.replace(/[,"]/g, " ")}%"`;
     query = query.or(
       `title.ilike.${safe},url.ilike.${safe},description.ilike.${safe}`,
@@ -89,7 +84,7 @@ export async function findDuplicateBookmark(
   });
 
   if (err) return null;
-  return (data as Bookmark | null) ?? null;
+  return (data as Bookmark[] | null)?.[0] ?? null;
 }
 
 function invalidateBookmarkCaches(queryClient: ReturnType<typeof useQueryClient>) {
@@ -143,10 +138,6 @@ async function removeBookmark(id: string): Promise<void> {
   if (err) throw new Error(err.message);
 }
 
-// Each of these is a small wrapper around useMutation, called fresh from
-// whichever component triggers the action. Every component gets its OWN
-// isPending/error for that specific mutation (e.g. only the button that was
-// clicked shows a spinner) while still sharing the same underlying cache.
 export function useAddBookmark() {
   const queryClient = useQueryClient();
   return useMutation({

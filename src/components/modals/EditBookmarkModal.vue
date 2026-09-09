@@ -51,12 +51,6 @@ watch(
   { immediate: true },
 );
 
-watch(isOpen, (open) => {
-  if (!open) {
-    duplicateBookmark.value = null;
-  }
-});
-
 function scheduleDuplicateCheck(nextUrl: string) {
   if (urlDebounceTimer) clearTimeout(urlDebounceTimer);
 
@@ -75,9 +69,18 @@ function scheduleDuplicateCheck(nextUrl: string) {
   }, 300);
 }
 
+watch(isOpen, (open) => {
+  if (!open) {
+    duplicateBookmark.value = null;
+    return;
+  }
+  scheduleDuplicateCheck(form.value.url);
+});
+
 watch(
   () => form.value.url,
   (nextUrl) => {
+    if (!isOpen.value) return;
     scheduleDuplicateCheck(nextUrl);
   },
 );

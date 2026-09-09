@@ -53,7 +53,6 @@ function logout() {
     </template>
 
     <template #content>
-      <!-- Profile header -->
       <div class="flex min-w-62 items-center gap-150 px-100 py-150">
         <div
           class="flex size-500 shrink-0 items-center justify-center overflow-hidden rounded-full border border-neutral-300 p-2 dark:border-neutral-dark-500"
@@ -82,7 +81,6 @@ function logout() {
         </div>
       </div>
 
-      <!-- Theme toggle -->
       <div class="flex items-center justify-between p-100">
         <div
           class="flex items-center gap-125 text-preset-4 text-neutral-800 dark:text-neutral-dark-100"
@@ -133,7 +131,6 @@ function logout() {
 
       <div class="mx-1 my-1 h-px bg-neutral-100 dark:bg-neutral-dark-500" />
 
-      <!-- Logout -->
       <button
         type="button"
         class="flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-neutral-800 outline-none hover:bg-neutral-100 dark:text-neutral-dark-100 dark:hover:bg-neutral-dark-600"

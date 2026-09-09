@@ -1,4 +1,3 @@
-<!-- Sidebar.vue -->
 <script setup lang="ts">
 import Tags from "./ui/Tags.vue";
 import Folders from "./ui/Folders.vue";
@@ -15,7 +14,7 @@ interface Section {
 }
 
 const props = defineProps<{
-  isOpen?: boolean; // only used on tablet/mobile
+  isOpen?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -47,7 +46,6 @@ const isRouteActive = (routeName: string) => {
 </script>
 
 <template>
-  <!-- Backdrop (tablet/mobile only) -->
   <Teleport to="body">
     <Transition name="sidebar-backdrop">
       <div
@@ -59,19 +57,16 @@ const isRouteActive = (routeName: string) => {
     </Transition>
   </Teleport>
 
-  <!-- Sidebar -->
   <div
     :class="[
       'fixed lg:static top-0 left-0 z-50',
       'flex flex-col overflow-hidden bg-neutral-0 w-74 h-screen border-r border-neutral-400 dark:bg-neutral-dark-800 dark:border-r-neutral-dark-500',
       'transition-transform duration-300',
-      // On mobile/tablet: slide in/out. On lg: always visible
       'lg:translate-x-0',
       props.isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
     ]"
   >
     <div class="relative shrink-0 pt-250 px-250 pb-125">
-      <!-- Close button: tablet/mobile only -->
       <Button
         variant="secondary"
         size="none"
