@@ -39,16 +39,9 @@ onMounted(() => {
       <CardSkeleton v-for="n in 6" :key="n" />
     </div>
 
-    <div
-      v-else-if="bookmarks.length"
-      class="flex flex-1 flex-col gap-400"
-    >
+    <div v-else-if="bookmarks.length" class="flex flex-1 flex-col gap-400 pb-4">
       <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <div
-          v-for="bookmark in bookmarks"
-          :key="bookmark.id"
-          class="h-full"
-        >
+        <div v-for="bookmark in bookmarks" :key="bookmark.id" class="h-full">
           <Card :bookmark="bookmark" />
         </div>
       </div>
