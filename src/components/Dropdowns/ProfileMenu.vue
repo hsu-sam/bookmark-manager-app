@@ -6,6 +6,7 @@ import Dropdown from "../ui/Dropdown.vue";
 import AvatarPickerModal from "../modals/AvatarPickerModal.vue";
 import { useAuth } from "@/services/useAuth.ts";
 import { useTheme } from "@/composables/useTheme";
+import { CHROME_EXTENSION_STORE_URL } from "@/constants/extension";
 
 const router = useRouter();
 const { user } = useAuth();
@@ -128,6 +129,18 @@ function logout() {
         <Icon icon="local:icon-person" class="h-4 w-4" />
         Change avatar
       </button>
+
+      <div class="mx-1 my-1 h-px bg-neutral-100 dark:bg-neutral-dark-500" />
+
+      <a
+        :href="CHROME_EXTENSION_STORE_URL"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-neutral-800 outline-none hover:bg-neutral-100 dark:text-neutral-dark-100 dark:hover:bg-neutral-dark-600"
+      >
+        <Icon icon="logos:chrome" class="h-4 w-4" />
+        Get the browser extension
+      </a>
 
       <div class="mx-1 my-1 h-px bg-neutral-100 dark:bg-neutral-dark-500" />
 

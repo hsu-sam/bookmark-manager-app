@@ -23,6 +23,12 @@ const routes: RouteRecordRaw[] = [
     meta: { authless: true },
   },
   {
+    path: "/privacy",
+    name: "privacy",
+    component: () => import("../views/Privacy.vue"),
+    meta: { authless: true },
+  },
+  {
     path: "/:pathMatch(.*)*",
     component: () => import("@/views/private/PageNotFound.vue"),
     name: "NotFound",
