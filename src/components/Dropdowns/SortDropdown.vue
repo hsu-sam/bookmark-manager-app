@@ -16,7 +16,11 @@ const sortBy = defineModel<BookmarkSortOption>({
 <template>
   <Dropdown align="end" content-class="min-w-[200px]">
     <template #trigger>
-      <Button variant="secondary" type="button" class="shrink-0 w-fit">
+      <Button
+        variant="secondary"
+        type="button"
+        class="shrink-0 w-fit text-preset-3 text-neutral-900"
+      >
         <Icon icon="local:icon-sort" />
         Sort by
       </Button>

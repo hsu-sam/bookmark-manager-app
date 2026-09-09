@@ -43,7 +43,9 @@ const getFaviconUrl = (bookmark: Bookmark) => {
 
   try {
     const domain = new URL(
-      bookmark.url.startsWith("http") ? bookmark.url : `https://${bookmark.url}`,
+      bookmark.url.startsWith("http")
+        ? bookmark.url
+        : `https://${bookmark.url}`,
     ).hostname;
     return `https://www.google.com/s2/favicons?sz=64&domain=${domain}`;
   } catch (e) {
@@ -117,7 +119,7 @@ async function handleTogglePin(id: string) {
             </h2>
 
             <p
-              class="w-full truncate text-preset-5 text-neutral-600 dark:text-neutral-dark-100"
+              class="w-full truncate text-preset-5 text-neutral-800 dark:text-neutral-dark-100"
               :title="bookmark.url"
             >
               {{ bookmark.url }}
@@ -144,7 +146,7 @@ async function handleTogglePin(id: string) {
 
       <div class="flex min-h-0 w-full flex-1 flex-col justify-between gap-150">
         <p
-          class="line-clamp-4 text-p4 text-neutral-600 dark:text-neutral-dark-100"
+          class="line-clamp-4 text-preset-4-medium text-neutral-800 dark:text-neutral-dark-100"
         >
           {{ bookmark.description }}
         </p>
@@ -156,7 +158,7 @@ async function handleTogglePin(id: string) {
           <p
             v-for="(tag, index) in bookmark.tags"
             :key="index"
-            class="rounded-4 bg-neutral-100 px-100 py-025 dark:bg-neutral-dark-600"
+            class="rounded-4 text-preset-5 text-neutral-800 bg-neutral-100 px-100 py-025 dark:bg-neutral-dark-600"
           >
             {{ tag }}
           </p>
@@ -168,17 +170,17 @@ async function handleTogglePin(id: string) {
       class="flex shrink-0 items-center justify-between border-t border-neutral-300 px-200 py-150 text-neutral-800 dark:border-neutral-dark-500 dark:text-neutral-dark-100"
     >
       <div class="flex items-center gap-200">
-        <p class="flex items-center gap-100">
+        <p class="flex items-center gap-100 text-preset-5">
           <Icon icon="local:icon-visit-count" />
           <span>{{ bookmark.visit_count }}</span>
         </p>
-        <p class="flex items-center gap-100">
+        <p class="flex items-center gap-100 text-preset-5">
           <Icon icon="local:icon-last-visited" />
           <span>{{
             bookmark.last_visited ? formatDate(bookmark.last_visited) : "Never"
           }}</span>
         </p>
-        <p class="flex items-center gap-100">
+        <p class="flex items-center gap-100 text-preset-5">
           <Icon icon="local:icon-created" />
           <span>{{ formatDate(bookmark.created_at) }}</span>
         </p>

@@ -31,7 +31,7 @@ defineExpose({
       :disabled
       type="search"
       aria-keyshortcuts="/"
-      class="flex-1 w-full border-0 bg-transparent focus-visible:outline-none placeholder:text-neutral-500 dark:text-neutral-dark-0 dark:placeholder:text-neutral-dark-100/60"
+      class="flex-1 w-full text-preset-4-medium border-0 bg-transparent focus-visible:outline-none placeholder:text-neutral-800 dark:text-neutral-dark-0 dark:placeholder:text-neutral-dark-100/60"
     />
   </label>
 </template>
