@@ -38,7 +38,7 @@ import ThemeLogo from "@/components/ThemeLogo.vue";
           </p>
         </section>
 
-        <section class="flex flex-col gap-100">
+        <!-- <section class="flex flex-col gap-100">
           <h3>How your data is stored</h3>
           <p>
             Your account and bookmarks are stored in our Supabase-hosted
@@ -48,7 +48,7 @@ import ThemeLogo from "@/components/ThemeLogo.vue";
             browser's local storage. Neither is accessible to other websites or
             other users.
           </p>
-        </section>
+        </section> -->
 
         <section class="flex flex-col gap-100">
           <h3>Third-party services</h3>
@@ -74,9 +74,9 @@ import ThemeLogo from "@/components/ThemeLogo.vue";
           <p>
             Questions about this policy or your data? Email
             <a
-              href="mailto:devia@cyberspector.com"
+              href="mailto:samuelhounsouu@gmail.com"
               class="text-teal-700 dark:text-neutral-dark-300 underline"
-              >devia@cyberspector.com</a
+              >samuelhounsouu@gmail.com</a
             >.
           </p>
         </section>
