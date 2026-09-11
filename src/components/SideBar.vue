@@ -57,7 +57,8 @@ const isRouteActive = (routeName: string) => {
     </Transition>
   </Teleport>
 
-  <div
+  <aside
+    aria-label="Sidebar"
     :class="[
       'fixed lg:static top-0 left-0 z-50',
       'flex flex-col overflow-hidden bg-neutral-0 w-74 h-screen border-r border-neutral-400 dark:bg-neutral-dark-800 dark:border-r-neutral-dark-500',
@@ -79,7 +80,8 @@ const isRouteActive = (routeName: string) => {
       <ThemeLogo />
     </div>
 
-    <div
+    <nav
+      aria-label="Main navigation"
       class="flex min-h-0 flex-1 flex-col gap-200 overflow-y-auto pt-0 pb-250 px-200"
     >
       <div class="flex flex-col gap-100">
@@ -112,8 +114,8 @@ const isRouteActive = (routeName: string) => {
       <Folders @select="closeSidebar" />
 
       <Tags @select="closeSidebar" />
-    </div>
-  </div>
+    </nav>
+  </aside>
 </template>
 
 <style scoped>

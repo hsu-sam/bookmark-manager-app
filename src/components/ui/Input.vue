@@ -94,10 +94,7 @@ const reactiveType = ref(props.type);
   </Field>
 </template>
 <style scoped>
-.valid {
-}
-
-.error {
+Ò .error {
   color: var(--color-red-600);
 }
 
