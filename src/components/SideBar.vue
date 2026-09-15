@@ -61,7 +61,7 @@ const isRouteActive = (routeName: string) => {
     aria-label="Sidebar"
     :class="[
       'fixed lg:static top-0 left-0 z-50',
-      'flex flex-col overflow-hidden bg-neutral-0 w-74 h-screen border-r border-neutral-400 dark:bg-neutral-dark-800 dark:border-r-neutral-dark-500',
+      'flex flex-col overflow-hidden bg-neutral-0 min-w-74 h-screen border-r border-neutral-400 dark:bg-neutral-dark-800 dark:border-r-neutral-dark-500',
       'transition-transform duration-300',
       'lg:translate-x-0',
       props.isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
