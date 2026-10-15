@@ -1,4 +1,4 @@
-import { computed } from "vue";
+import { computed, toValue, type MaybeRefOrGetter } from "vue";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import { supabase } from "@/utils/supabase";
 import type {
@@ -93,4 +93,33 @@ export function useDeleteFolder() {
       queryClient.invalidateQueries({ queryKey: folderCountKeys.all });
     },
   });
+}
+
+export type FolderCountRow = { folder_id: string | null; count: number };
+
+export function useFolderCounts(isArchived: MaybeRefOrGetter<boolean>) {
+  const query = useQuery({
+    queryKey: computed(() => folderCountKeys.scoped(toValue(isArchived))),
+    queryFn: async () => {
+      const { data, error: err } = await supabase.rpc("bookmark_folder_counts", {
+        p_is_archived: toValue(isArchived),
+      });
+      if (err) throw new Error(err.message);
+      return data as FolderCountRow[];
+    },
+  });
+
+  const folderCounts = computed(() => {
+    const counts = new Map<string, number>();
+    for (const row of query.data.value ?? []) {
+      if (row.folder_id) counts.set(row.folder_id, row.count);
+    }
+    return counts;
+  });
+
+  const uncategorizedCount = computed(
+    () => (query.data.value ?? []).find((row) => !row.folder_id)?.count ?? 0,
+  );
+
+  return { folderCounts, uncategorizedCount };
 }

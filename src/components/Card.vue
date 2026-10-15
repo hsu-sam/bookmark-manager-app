@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { Icon } from "@iconify/vue";
 import ActionsDropdown from "./Dropdowns/ActionsDropdown.vue";
 import { useDate } from "../composables/useDate";
@@ -8,12 +8,13 @@ import EditBookmarkModal from "./modals/EditBookmarkModal.vue";
 import ArchivedBookmarkModal from "./modals/ArchivedBookmarkModal.vue";
 import UnarchivedBookmarkModal from "./modals/UnarchivedBookmarkModal.vue";
 import DeleteBookmarkModal from "./modals/DeleteBookmark.vue";
-import MoveToFolderModal from "./modals/MoveToFolderModal.vue";
 import { useTogglePinBookmark } from "@/services/useBookmark.ts";
 import { useToast } from "@/composables/useToast.ts";
+import { useBookmarkSelection } from "@/composables/useBookmarkSelection";
 
 const { formatDate } = useDate();
 const toast = useToast();
+const { isSelected, toggle } = useBookmarkSelection();
 
 const props = withDefaults(
   defineProps<{
@@ -33,10 +34,11 @@ const isEditModalOpen = ref(false);
 const isArchiveModalOpen = ref(false);
 const isUnarchiveModalOpen = ref(false);
 const isDeleteModalOpen = ref(false);
-const isMoveFolderModalOpen = ref(false);
 const togglePinMutation = useTogglePinBookmark();
 
 const faviconFailed = ref(false);
+
+const selected = computed(() => !props.archived && isSelected(props.bookmark.id));
 
 const getFaviconUrl = (bookmark: Bookmark) => {
   if (bookmark.favicon_url) return bookmark.favicon_url;
@@ -69,10 +71,6 @@ function openDeleteModal() {
   isDeleteModalOpen.value = true;
 }
 
-function openMoveFolderModal() {
-  isMoveFolderModalOpen.value = true;
-}
-
 async function handleTogglePin(id: string) {
   try {
     const result = await togglePinMutation.mutateAsync({
@@ -88,13 +86,14 @@ async function handleTogglePin(id: string) {
 
 <template>
   <div
-    class="flex h-full w-full flex-col overflow-hidden rounded-12 bg-neutral-0 dark:bg-neutral-dark-800 min-w-84.5 min-h-68"
+    class="flex h-full w-full flex-col overflow-hidden rounded-12 bg-neutral-0 transition-shadow dark:bg-neutral-dark-800 min-w-84.5 min-h-68"
+    :class="selected ? 'ring-2 ring-teal-700 dark:ring-teal-400' : ''"
   >
     <div class="flex flex-1 flex-col gap-200 p-200">
       <div class="flex w-full min-w-0 items-center justify-between gap-150">
         <div class="flex min-w-0 flex-1 items-center gap-150">
           <div
-            class="flex h-11 w-11 shrink-0 items-center justify-center rounded-12 border border-neutral-300 bg-neutral-0 dark:border-neutral-dark-500 dark:bg-neutral-dark-800"
+            class="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-12 border border-neutral-300 bg-neutral-0 dark:border-neutral-dark-500 dark:bg-neutral-dark-800"
           >
             <img
               v-if="!faviconFailed"
@@ -110,6 +109,22 @@ async function handleTogglePin(id: string) {
               icon="lucide:globe"
               class="size-5 text-neutral-500 dark:text-neutral-dark-100"
             />
+
+            <button
+              v-if="!archived"
+              type="button"
+              class="absolute -top-1.5 -left-1.5 flex size-4.5 items-center justify-center rounded-full border transition-colors"
+              :class="
+                selected
+                  ? 'border-teal-700 bg-teal-700 text-neutral-0 dark:border-teal-400 dark:bg-teal-400 dark:text-neutral-dark-900'
+                  : 'border-neutral-400 bg-neutral-0 hover:border-teal-700 dark:border-neutral-dark-500 dark:bg-neutral-dark-800 dark:hover:border-teal-400'
+              "
+              :aria-pressed="selected"
+              :aria-label="`Select ${bookmark.title}`"
+              @click="toggle(bookmark.id)"
+            >
+              <Icon v-if="selected" icon="lucide:check" class="size-3" />
+            </button>
           </div>
           <div class="flex min-w-0 flex-1 flex-col items-start gap-050">
             <h2
@@ -133,7 +148,6 @@ async function handleTogglePin(id: string) {
           :bookmark="bookmark"
           :archived="archived"
           @edit="openEditModal"
-          @move-to-folder="openMoveFolderModal"
           @toggle-pin="handleTogglePin"
           @archive="openArchiveModal"
           @unarchive="openUnarchiveModal"
@@ -218,12 +232,6 @@ async function handleTogglePin(id: string) {
     <DeleteBookmarkModal
       v-if="archived"
       v-model="isDeleteModalOpen"
-      :bookmark="bookmark"
-    />
-
-    <MoveToFolderModal
-      v-if="!archived"
-      v-model="isMoveFolderModalOpen"
       :bookmark="bookmark"
     />
   </div>

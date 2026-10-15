@@ -22,7 +22,6 @@ const props = withDefaults(
 
 const emit = defineEmits<{
   (e: "edit"): void;
-  (e: "move-to-folder"): void;
   (e: "toggle-pin", id: string): void;
   (e: "archive", id: string): void;
   (e: "unarchive", id: string): void;
@@ -74,11 +73,6 @@ const bookmarkActions = computed(() => {
       label: "Edit",
       icon: "local:icon-edit",
       action: () => emit("edit"),
-    });
-    actions.push({
-      label: "Move to folder",
-      icon: "lucide:folder-input",
-      action: () => emit("move-to-folder"),
     });
     actions.push({
       label: "Archive",

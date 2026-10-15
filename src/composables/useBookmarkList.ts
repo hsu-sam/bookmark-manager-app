@@ -6,6 +6,7 @@ import { useBookmarkSearch } from "./useBookmarkSearch";
 import { useBookmarkTags } from "./useBookmarkTags";
 import { useBookmarkFolders } from "./useBookmarkFolders";
 import { useBookmarkSort } from "./useBookmarkSort";
+import { useBookmarkSelection } from "./useBookmarkSelection";
 
 export const PAGE_SIZE = 10;
 const SEARCH_DEBOUNCE_MS = 300;
@@ -15,6 +16,7 @@ export function useBookmarkList(archived: boolean) {
   const { selectedTags } = useBookmarkTags();
   const { selectedFolderId } = useBookmarkFolders();
   const { sortBy } = useBookmarkSort();
+  const { clearSelection } = useBookmarkSelection();
 
   const currentPage = ref(1);
 
@@ -29,7 +31,10 @@ export function useBookmarkList(archived: boolean) {
 
   watch([debouncedSearch, selectedTags, selectedFolderId, sortBy], () => {
     currentPage.value = 1;
+    clearSelection();
   });
+
+  watch(currentPage, clearSelection);
 
   const params = computed(() => ({
     archived,

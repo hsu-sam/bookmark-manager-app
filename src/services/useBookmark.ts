@@ -155,6 +155,27 @@ export function useUpdateBookmark() {
   });
 }
 
+export function useMoveBookmarks() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      ids,
+      folderId,
+    }: {
+      ids: string[];
+      folderId: string | null;
+    }) => {
+      const { error: err } = await supabase
+        .from("bookmarks")
+        .update({ folder_id: folderId })
+        .in("id", ids);
+
+      if (err) throw new Error(err.message);
+    },
+    onSuccess: () => invalidateBookmarkCaches(queryClient),
+  });
+}
+
 export function useDeleteBookmark() {
   const queryClient = useQueryClient();
   return useMutation({
